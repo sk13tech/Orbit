@@ -490,7 +490,21 @@ export default function App(){
       </div></div>)}
 
       {/* ═══ Login Popup ═══ */}
-      {!user&&!authLoading&&(
+      {!user&&!authLoading&&!isFirebaseConfigured&&(
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-5" style={{background:"rgba(244,245,240,0.4)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)"}}>
+          <div className="bg-white w-full max-w-[300px] text-center" style={{borderRadius:32,padding:"40px 32px 32px",boxShadow:"0 16px 64px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.03)"}}>
+            <div className="mx-auto mb-6 w-14 h-14 rounded-2xl overflow-hidden"><Image src="/logo.png" alt="Orbit" width={56} height={56} className="w-full h-full object-cover"/></div>
+            <h2 className="text-[18px] font-bold text-[#1A1A1A] tracking-tight mb-2">Setup Required</h2>
+            <p className="text-[13px] text-[#6B7280] leading-relaxed mb-4">Firebase is not configured. Add environment variables in Vercel and redeploy.</p>
+            <div className="bg-[#F4F5F0] rounded-2xl p-3 text-left text-[11px] text-[#6B7280] font-mono space-y-0.5">
+              <p>NEXT_PUBLIC_FIREBASE_API_KEY</p>
+              <p>NEXT_PUBLIC_FIREBASE_PROJECT_ID</p>
+              <p>NEXT_PUBLIC_FIREBASE_APP_ID</p>
+            </div>
+          </div>
+        </div>
+      )}
+      {!user&&!authLoading&&isFirebaseConfigured&&(
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-5 a-fadeIn" style={{background:"rgba(244,245,240,0.4)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)"}}>
           <div className="bg-white w-full max-w-[300px] a-scaleIn text-center" style={{borderRadius:32,padding:"40px 32px 32px",boxShadow:"0 16px 64px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.03)"}}>
             <div className="mx-auto mb-6 w-14 h-14 rounded-2xl overflow-hidden">
