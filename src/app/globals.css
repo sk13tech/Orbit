@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+* { -webkit-tap-highlight-color: transparent; }
+html { font-family: 'Inter', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+body { background: #F4F5F0; color: #1A1A1A; min-height: 100vh; }
+::-webkit-scrollbar { width: 0; height: 0; }
+input, textarea, select { font-size: 16px !important; font-family: inherit; }
+input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0.4; }
+
+.overlay { background: rgba(0,0,0,0.18); }
+
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+.a-slideUp { animation: slideUp .4s cubic-bezier(.32,.72,.24,1) both; }
+.a-slideIn { animation: slideIn .3s cubic-bezier(.32,.72,.24,1) both; }
+.a-fadeIn  { animation: fadeIn .2s ease both; }
+.a-scaleIn { animation: scaleIn .25s ease both; }
+
+@keyframes slideOut { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+.a-slideOut { animation: slideOut .25s ease-in both; }
+.a-fadeOut  { animation: fadeOut .2s ease both; }

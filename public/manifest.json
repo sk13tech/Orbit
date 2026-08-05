@@ -1,0 +1,14 @@
+{
+  "name": "Orbit — Lead Management",
+  "short_name": "Orbit",
+  "description": "Mobile-first lead management CRM for sales teams",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F4F5F0",
+  "theme_color": "#1A1A1A",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
