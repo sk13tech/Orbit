@@ -304,7 +304,9 @@ export default function App(){
         <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm px-5 py-3.5 flex items-center justify-between" style={{boxShadow:"0 1px 0 #ECEEE8"}}>
           <button onClick={withTap(()=>setNav(true))} className="p-2 -ml-2 rounded-xl text-[#1A1A1A] active:scale-90 transition-transform">{I.menu}</button>
           <span className="text-[17px] font-bold text-[#1A1A1A] tracking-tight">{cfg.siteName}</span>
-          <button onClick={withTap(openNew)} className="w-9 h-9 bg-[#1A1A1A] text-white rounded-2xl flex items-center justify-center active:scale-90 transition-transform">{I.plus}</button>
+          <button onClick={withTap(openNew)} className="w-9 h-9 bg-[#1A1A1A] text-white rounded-2xl flex items-center justify-center active:scale-90 transition-transform overflow-hidden">
+            <Image src="/logo.png" alt={cfg.siteName} width={18} height={18} className="rounded-sm" />
+          </button>
         </div>
 
         {/* Search */}
@@ -370,7 +372,10 @@ export default function App(){
                 <div className="w-12 h-12 rounded-2xl bg-[#F4F5F0] flex items-center justify-center mx-auto mb-3 text-[#D1D5DB]">{I.users}</div>
                 <p className="text-[15px] font-semibold text-[#1A1A1A] mb-1">No leads yet</p>
                 <p className="text-[13px] text-[#9CA3AF] mb-4">Tap + to add your first lead</p>
-                <button onClick={withTap(openNew)} className="px-5 py-2.5 bg-[#1A1A1A] text-white rounded-2xl text-[13px] font-semibold active:scale-[0.97] transition-transform flex items-center gap-2 mx-auto">{I.plus} Add Lead</button>
+                <button onClick={withTap(openNew)} className="px-5 py-2.5 bg-[#1A1A1A] text-white rounded-2xl text-[13px] font-semibold active:scale-[0.97] transition-transform flex items-center gap-2 mx-auto">
+                  <Image src="/logo.png" alt={cfg.siteName} width={16} height={16} className="rounded-sm" />
+                  Add Lead
+                </button>
               </div>:cur.map(l=><LC key={l.id} lead={l}/>)}
             </div>
           )}
