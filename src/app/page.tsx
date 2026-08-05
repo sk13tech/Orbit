@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
-import { auth, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
+import { onAuthStateChanged, getRedirectResult, signInWithPopup, signInWithRedirect, signOut, type User } from "firebase/auth";
+import { auth, authReady, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
 import * as FS from "@/lib/firestore";
 import type { SiteConfig } from "@/lib/firestore";
 
@@ -60,23 +60,43 @@ export default function App(){
   const [signingIn,setSigningIn]=useState(false);
 
   useEffect(()=>{
-    if(!auth){setAuthLoading(false);return;}
-    const unsub=onAuthStateChanged(auth,(u)=>{
-      setUser(u);
-      setAuthLoading(false);
-      setSigningIn(false);
-    });
-    return unsub;
+    let unsub=()=>{};
+    (async()=>{
+      if(!auth){setAuthLoading(false);return;}
+      await authReady;
+      try{ await getRedirectResult(auth); }catch(e){ console.error("Redirect result error:", e); }
+      unsub=onAuthStateChanged(auth,(u)=>{
+        setUser(u);
+        setAuthLoading(false);
+        setSigningIn(false);
+      });
+      if(auth.currentUser){
+        setUser(auth.currentUser);
+        setAuthLoading(false);
+        setSigningIn(false);
+      }
+    })();
+    return()=>unsub();
   },[]);
 
   const signIn=async()=>{
     if(!auth||signingIn)return;
     setSigningIn(true);
+    await authReady;
     try{
       const result=await signInWithPopup(auth,googleProvider);
-      if(result.user)setUser(result.user);
-    }catch(e){
+      if(result.user){
+        setUser(result.user);
+        setSigningIn(false);
+        return;
+      }
+      setSigningIn(false);
+    }catch(e:unknown){
       console.error("Sign-in error:",e);
+      const err=e as {code?:string};
+      if(err.code==="auth/popup-blocked"||err.code==="auth/popup-closed-by-user"||err.code==="auth/cancelled-popup-request"){
+        try{ await signInWithRedirect(auth,googleProvider); return; }catch(e2){ console.error("Redirect fallback failed:",e2); }
+      }
       setSigningIn(false);
     }
   };
