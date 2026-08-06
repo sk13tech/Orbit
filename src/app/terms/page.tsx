@@ -5,12 +5,12 @@ export const metadata = { title: "Terms of Use — Orbit" };
 export default function TermsPage() {
   const sections = [
     { t: "Acceptance of Terms", d: "By accessing and using Orbit, you accept and agree to be bound by these Terms of Use. If you do not agree, please discontinue use immediately. These terms apply to all users of the application." },
-    { t: "Description of Service", d: "Orbit is a cloud-based lead management and CRM platform. It helps sales teams track, organize, manage, and follow up on potential customers efficiently." },
+    { t: "Description of Service", d: "Orbit is a cloud-based lead management and CRM platform operated by Sita Enterprises Pvt. Ltd. It helps sales teams track, organize, manage, and follow up on potential customers efficiently." },
     { t: "User Account & Authentication", d: "You must sign in using Google Authentication to access Orbit. You are responsible for all activities under your account. Do not share your credentials or allow unauthorized access to your account." },
     { t: "User Responsibilities", d: "You agree to provide accurate information, use the service lawfully, not attempt to access other users' data, not reverse-engineer or misuse the platform, and comply with all applicable Indian and international laws." },
-    { t: "Data Ownership & Usage", d: "All lead data, follow-up logs, and notes you enter remain your exclusive property. Orbit does not claim ownership of your data. You may export your data at any time via the in-app export feature." },
-    { t: "Intellectual Property", d: "The Orbit application, its design, code, logos, and branding are the intellectual property of Sita Enterprises. You may not copy, modify, distribute, or create derivative works without written permission." },
-    { t: "Limitation of Liability", d: "Orbit is provided \"as is\" without warranty of any kind. Orbit shall not be liable for any direct, indirect, incidental, or consequential damages arising from the use or inability to use the service." },
+    { t: "Data Ownership & Usage", d: "All lead data, follow-up logs, and notes you enter remain your exclusive property. Sita Enterprises Pvt. Ltd. does not claim ownership of your data. You may export your data at any time via the in-app export feature." },
+    { t: "Intellectual Property", d: "The Orbit application, its design, code, logos, and branding are the intellectual property of Sita Enterprises Pvt. Ltd. You may not copy, modify, distribute, or create derivative works without written permission." },
+    { t: "Limitation of Liability", d: "Orbit is provided \"as is\" without warranty of any kind. Sita Enterprises Pvt. Ltd. shall not be liable for any direct, indirect, incidental, or consequential damages arising from the use or inability to use the service." },
     { t: "Service Availability", d: "We strive to maintain 99.9% uptime but do not guarantee uninterrupted service. Scheduled maintenance, updates, or unforeseen technical issues may temporarily affect availability." },
     { t: "Termination", d: "We reserve the right to suspend or terminate your access at any time for violation of these terms. You may also delete your account at any time. Upon termination, your data will be retained for 30 days before permanent deletion." },
     { t: "Governing Law", d: "These terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of courts in India." },
@@ -35,7 +35,7 @@ export default function TermsPage() {
             <h1 className="text-[24px] font-extrabold text-[#1A1A1A] tracking-tight mb-2">Terms of Use</h1>
             <p className="text-[14px] text-[#6B7280] leading-relaxed">Please read these terms carefully before using Orbit. By using our services, you agree to comply with and be bound by these terms and conditions.</p>
             <div className="mt-4 pt-3 border-t border-[#F3F4F0] flex items-center justify-between">
-              <p className="text-[12px] text-[#9CA3AF]">Orbit</p>
+              <p className="text-[12px] text-[#9CA3AF]">Sita Enterprises Pvt. Ltd.</p>
               <p className="text-[12px] text-[#9CA3AF]">{new Date().toLocaleDateString("en-IN", { month: "long", year: "numeric" })}</p>
             </div>
           </div>

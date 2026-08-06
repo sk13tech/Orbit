@@ -8,13 +8,13 @@ export default function PrivacyPage() {
     { t: "How We Use Your Information", d: "Your data is used exclusively to provide lead management functionality, generate analytics and performance reports within your account, improve the application experience, and ensure account security. We never use your data for advertising." },
     { t: "Data Storage & Security", d: "All data is stored securely in Google Firebase/Firestore with encryption at rest and in transit. Authentication is handled via Google OAuth 2.0. We implement industry-standard security measures including access controls, audit logging, and regular security reviews." },
     { t: "Data Isolation", d: "Your data is completely isolated from other users. Firestore security rules ensure that only you can read, create, update, or delete your own leads and logs. No other user or administrator can access your data without explicit authorization." },
-    { t: "Data Sharing", d: "Orbit does not sell, trade, rent, or share your personal data with any third parties. Data may only be disclosed when required by law, to protect our legal rights, or with your explicit written consent." },
+    { t: "Data Sharing", d: "Sita Enterprises Pvt. Ltd. does not sell, trade, rent, or share your personal data with any third parties. Data may only be disclosed when required by law, to protect our legal rights, or with your explicit written consent." },
     { t: "Data Retention & Deletion", d: "Your data is retained as long as your account is active. You may export your data at any time using the CSV export feature. You can request complete account and data deletion by contacting us. All data will be permanently removed within 30 days of a deletion request." },
     { t: "Your Rights", d: "Under applicable data protection laws, you have the right to: access all your personal data, correct any inaccurate data, request complete data deletion, export your data in CSV format, withdraw consent at any time, and lodge a complaint with a data protection authority." },
     { t: "Cookies & Local Storage", d: "Orbit uses browser local storage to maintain your authentication session. We do not use third-party tracking cookies. Firebase may use essential cookies for authentication and security purposes only." },
     { t: "Children's Privacy", d: "Orbit is not intended for use by individuals under the age of 18. We do not knowingly collect personal information from children. If you believe a child has provided us with personal data, please contact us immediately." },
     { t: "Changes to This Policy", d: "We may update this Privacy Policy periodically to reflect changes in our practices or legal requirements. Material changes will be communicated through the application. Continued use after changes constitutes acceptance of the revised policy." },
-    { t: "Contact Us", d: "For any privacy-related questions, concerns, data access requests, or deletion requests, please contact our data protection team at sitaenterprisespvtltd@gmail.com" },
+    { t: "Contact Us", d: "For any privacy-related questions, concerns, data access requests, or deletion requests, please contact our data protection team at sitaenterprisespvtltd@gmail.com — Sita Enterprises Pvt. Ltd." },
   ];
 
   return (
@@ -34,7 +34,7 @@ export default function PrivacyPage() {
             <h1 className="text-[24px] font-extrabold text-[#1A1A1A] tracking-tight mb-2">Privacy Policy</h1>
             <p className="text-[14px] text-[#6B7280] leading-relaxed">Your privacy matters to us. This policy explains how Sita Enterprises Pvt. Ltd. collects, uses, and protects your personal information when you use Orbit.</p>
             <div className="mt-4 pt-3 border-t border-[#F3F4F0] flex items-center justify-between">
-              <p className="text-[12px] text-[#9CA3AF]">Orbit</p>
+              <p className="text-[12px] text-[#9CA3AF]">Sita Enterprises Pvt. Ltd.</p>
               <p className="text-[12px] text-[#9CA3AF]">{new Date().toLocaleDateString("en-IN", { month: "long", year: "numeric" })}</p>
             </div>
           </div>
