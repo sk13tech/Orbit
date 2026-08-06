@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
-import Image from "next/image";
-import { onAuthStateChanged, getRedirectResult, signInWithRedirect, signOut, type User } from "firebase/auth";
+import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut, type User } from "firebase/auth";
 import { auth, authReady, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
 import * as FS from "@/lib/firestore";
 import type { SiteConfig } from "@/lib/firestore";
@@ -71,27 +70,17 @@ export default function App(){
   const [signingIn,setSigningIn]=useState(false);
 
   useEffect(()=>{
-    let unsub=()=>{};
-    (async()=>{
-      if(!auth){setAuthLoading(false);return;}
-      await authReady;
-      try{
-        const result=await getRedirectResult(auth);
-        if(result?.user) setUser(result.user);
-      }catch(e){
-        console.error("Redirect result error:",e);
-      }
-      unsub=onAuthStateChanged(auth,(u)=>{
-        setUser(u);
-        setAuthLoading(false);
-        setSigningIn(false);
-      });
-      if(auth.currentUser){
-        setUser(auth.currentUser);
-        setAuthLoading(false);
-        setSigningIn(false);
-      }
-    })();
+    if(!auth){setAuthLoading(false);return;}
+    const unsub=onAuthStateChanged(auth,(u)=>{
+      setUser(u);
+      setAuthLoading(false);
+      setSigningIn(false);
+    });
+    if(auth.currentUser){
+      setUser(auth.currentUser);
+      setAuthLoading(false);
+      setSigningIn(false);
+    }
     return ()=>unsub();
   },[]);
 
@@ -99,14 +88,22 @@ export default function App(){
     if(!auth||!googleProvider||signingIn)return;
     setSigningIn(true);
     try{
-      if(typeof window!=="undefined") sessionStorage.setItem("orbit_auth_redirect","1");
-      await authReady;
-      await signInWithRedirect(auth,googleProvider);
-      return;
+      const result=await signInWithPopup(auth,googleProvider);
+      if(result?.user){
+        setUser(result.user);
+        setSigningIn(false);
+        return;
+      }
     }catch(e){
-      console.error("Sign-in error:",e);
-      setSigningIn(false);
+      console.error("Popup sign-in error:",e);
+      try{
+        await signInWithRedirect(auth,googleProvider);
+        return;
+      }catch(e2){
+        console.error("Redirect fallback error:",e2);
+      }
     }
+    setSigningIn(false);
   };
   const logOut=async()=>{
     if(auth){
@@ -118,7 +115,8 @@ export default function App(){
   };
   const closeNav=()=>{setNavClosing(true);setTimeout(()=>{setNav(false);setNavClosing(false);},250);};
 
-  const [cfg,setCfg]=useState<SiteConfig>({siteName:"Orbit",contactEmail:"sitaenterprisespvtltd@gmail.com"});
+  const [cfg,setCfg]=useState<SiteConfig>({siteName:"Orbit",contactEmail:"sitaenterprisespvtltd@gmail.com",logoUrl:"/logo.png"});
+  const logoSrc = /^(https?:\/\/|\/)/.test(cfg.logoUrl) ? cfg.logoUrl : "/logo.png";
   const [tab,setTab]=useState<"alerts"|"leads"|"stats">("alerts");
   const [sub,setSub]=useState<"active"|"won"|"lost">("active");
   const [nav,setNav]=useState(false);
@@ -420,7 +418,7 @@ export default function App(){
 
       {/* Nav */}
       {nav&&(<div className={`fixed inset-0 z-50 ${navClosing?"a-fadeOut":"a-fadeIn"}`}><div className="absolute inset-0 overlay" onClick={closeNav}/><div className={`absolute left-0 top-0 bottom-0 w-[280px] bg-white flex flex-col ${navClosing?"a-slideOut":"a-slideIn"}`} style={{boxShadow:"4px 0 32px rgba(0,0,0,0.06)"}}>
-        <div className="px-5 pt-5 pb-4 flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl overflow-hidden" style={{boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><Image src="/logo.png" alt={cfg.siteName} width={40} height={40} className="w-full h-full object-cover"/></div><div><span className="text-[16px] font-bold text-[#1A1A1A] block leading-tight">{cfg.siteName}</span><span className="text-[12px] text-[#9CA3AF]">Lead Management</span></div></div><button onClick={withTap(closeNav)} className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#9CA3AF] active:scale-90 transition-transform" style={{boxShadow:"0 1px 4px rgba(0,0,0,0.08)"}}>{I.back}</button></div>
+        <div className="px-5 pt-5 pb-4 flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl overflow-hidden" style={{boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><img src={logoSrc} alt={cfg.siteName} className="w-full h-full object-cover" referrerPolicy="no-referrer"/></div><div><span className="text-[16px] font-bold text-[#1A1A1A] block leading-tight">{cfg.siteName}</span><span className="text-[12px] text-[#9CA3AF]">Lead Management</span></div></div><button onClick={withTap(closeNav)} className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#9CA3AF] active:scale-90 transition-transform" style={{boxShadow:"0 1px 4px rgba(0,0,0,0.08)"}}>{I.back}</button></div>
         <div className="mx-5 h-px bg-[#F3F4F0]"/>
         <div className="px-5 pt-5 flex-1">
           <p className="text-[10px] text-[#9CA3AF] font-bold uppercase tracking-[0.12em] mb-4">Menu</p>
@@ -508,7 +506,7 @@ export default function App(){
       {!user&&!authLoading&&!isFirebaseConfigured&&(
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-5" style={{background:"rgba(244,245,240,0.4)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)"}}>
           <div className="bg-white w-full max-w-[300px] text-center" style={{borderRadius:32,padding:"40px 32px 32px",boxShadow:"0 16px 64px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.03)"}}>
-            <div className="mx-auto mb-6 w-14 h-14 rounded-2xl overflow-hidden"><Image src="/logo.png" alt="Orbit" width={56} height={56} className="w-full h-full object-cover"/></div>
+            <div className="mx-auto mb-6 w-14 h-14 rounded-2xl overflow-hidden"><img src={logoSrc} alt={cfg.siteName} className="w-full h-full object-cover" referrerPolicy="no-referrer"/></div>
             <h2 className="text-[18px] font-bold text-[#1A1A1A] tracking-tight mb-2">Setup Required</h2>
             <p className="text-[13px] text-[#6B7280] leading-relaxed mb-4">Firebase is not configured. Add environment variables in Vercel and redeploy.</p>
             <div className="bg-[#F4F5F0] rounded-2xl p-3 text-left text-[11px] text-[#6B7280] font-mono space-y-0.5">
@@ -523,7 +521,7 @@ export default function App(){
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-5 a-fadeIn" style={{background:"rgba(244,245,240,0.4)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)"}}>
           <div className="bg-white w-full max-w-[300px] a-scaleIn text-center" style={{borderRadius:32,padding:"40px 32px 32px",boxShadow:"0 16px 64px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.03)"}}>
             <div className="mx-auto mb-6 w-14 h-14 rounded-2xl overflow-hidden">
-              <Image src="/logo.png" alt="Orbit" width={56} height={56} className="w-full h-full object-cover"/>
+<img src={logoSrc} alt={cfg.siteName} className="w-full h-full object-cover" referrerPolicy="no-referrer"/>
             </div>
             <h2 className="text-[20px] font-bold text-[#1A1A1A] tracking-tight leading-tight">Welcome back</h2>
             <p className="text-[13px] text-[#9CA3AF] mt-1.5 mb-7">Sign in to continue to {cfg.siteName}</p>

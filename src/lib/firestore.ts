@@ -8,9 +8,14 @@ import { getDb, auth } from "./firebase";
 export interface SiteConfig {
   siteName: string;
   contactEmail: string;
+  logoUrl: string;
 }
 
-const DEFAULT_CONFIG: SiteConfig = { siteName: "Orbit", contactEmail: "sitaenterprisespvtltd@gmail.com" };
+const DEFAULT_CONFIG: SiteConfig = {
+  siteName: "Orbit",
+  contactEmail: "sitaenterprisespvtltd@gmail.com",
+  logoUrl: "/logo.png",
+};
 let cachedConfig: SiteConfig | null = null;
 
 export async function getSiteConfig(): Promise<SiteConfig> {
@@ -22,6 +27,7 @@ export async function getSiteConfig(): Promise<SiteConfig> {
       cachedConfig = {
         siteName: typeof d.siteName === "string" && d.siteName ? d.siteName : DEFAULT_CONFIG.siteName,
         contactEmail: typeof d.contactEmail === "string" && d.contactEmail ? d.contactEmail : DEFAULT_CONFIG.contactEmail,
+        logoUrl: typeof d.logoUrl === "string" && d.logoUrl ? d.logoUrl : DEFAULT_CONFIG.logoUrl,
       };
     } else {
       // Create default config doc if it doesn't exist
