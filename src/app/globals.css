@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&display=swap');
 @import "tailwindcss";
 
 * { -webkit-tap-highlight-color: transparent; }
 html { font-family: 'Inter', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 body { background: #F4F5F0; color: #1A1A1A; min-height: 100vh; }
-.brand-font { font-family: "Universal Doomsday Medium Regular", "Inter", -apple-system, system-ui, sans-serif; letter-spacing: -0.02em; }
+.brand-font { font-family: 'Quicksand', 'Inter', -apple-system, system-ui, sans-serif; letter-spacing: 0.01em; }
 ::-webkit-scrollbar { width: 0; height: 0; }
 input, textarea, select { font-size: 16px !important; font-family: inherit; }
 input[type="date"]::-webkit-calendar-picker-indicator { opacity: 0.4; }

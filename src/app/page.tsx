@@ -121,6 +121,7 @@ export default function App(){
 
   const [cfg,setCfg]=useState<SiteConfig>({siteName:"Orbit",contactEmail:"sitaenterprisespvtltd@gmail.com",logoUrl:"/logo.png"});
   const logoSrc = /^(https?:\/\/|\/)/.test(cfg.logoUrl) ? cfg.logoUrl : "/logo.png";
+  const brandPngSrc = "/Orbit.png";
   const [tab,setTab]=useState<"alerts"|"leads"|"stats">("alerts");
   const [sub,setSub]=useState<"active"|"won"|"lost">("active");
   const [nav,setNav]=useState(false);
@@ -340,7 +341,7 @@ export default function App(){
         {/* Header */}
         <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm px-5 py-3.5 flex items-center justify-between" style={{boxShadow:"0 1px 0 #ECEEE8"}}>
           <button onClick={withTap(()=>setNav(true))} className="p-2 -ml-2 rounded-xl text-[#1A1A1A] active:scale-90 transition-transform">{I.menu}</button>
-          <svg width="78" height="70" viewBox="0 0 700 700" fill="currentColor" className="text-[#1A1A1A] shrink-0"><path fill="none" stroke="currentColor" strokeWidth="39.57" d="M119.63 271.94c51.75 0 93.7 42.03 93.7 93.88s-41.95 93.87-93.7 93.87-93.7-42.03-93.7-93.87 41.95-93.88 93.7-93.88z"/><path d="M336.7 353.72l-31.58 1.83c-14.97 5.7-16.87 24.28-16.87 24.28v91.41h-37.2l2.2-94.11c3.2-43.38 39.19-51.66 39.19-51.66l44.26-1.09v29.5z"/><path fill="none" stroke="currentColor" strokeWidth="36.99" d="M434.33 333.11c33.21 0 60.13 27.54 60.13 61.51s-26.92 61.52-60.13 61.52-60.13-27.54-60.13-61.52 26.92-61.51 60.13-61.51z"/><path fill="none" stroke="currentColor" strokeWidth="36.13" d="M374.2 275.61v103.05"/><path fill="none" stroke="currentColor" strokeWidth="33.55" d="M552.22 337.56v117.72"/><circle cx="552.38" cy="281.83" r="13.35"/><path d="M684.21 440.28l-31.58-1.82c-14.97-5.7-16.87-24.29-16.87-24.29l.55-139.36h-34.38l-1.17 142.23c3.21 43.37 39.19 51.65 39.19 51.65l44.26 1.09v-29.5z"/><path fill="none" stroke="currentColor" strokeWidth="31.83" d="M621.58 336.93l45.99-.14"/></svg>
+          <img src={brandPngSrc} alt={cfg.siteName} className="h-7 w-auto object-contain shrink-0" referrerPolicy="no-referrer" />
           <button onClick={withTap(openNew)} className="w-9 h-9 bg-[#1A1A1A] text-white rounded-2xl flex items-center justify-center active:scale-90 transition-transform">
             {I.plus}
           </button>
