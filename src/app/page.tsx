@@ -18,6 +18,15 @@ const ini=(n:string)=>n.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2
 function avc(n:string){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return["#5B8DEF","#43B88C","#F5A623","#E85D75","#6C63FF","#38BDF8","#F472B6","#A78BFA"][Math.abs(h)%8];}
 function tap(s:"light"|"medium"|"heavy"="light"){try{if(typeof navigator!=="undefined"&&"vibrate" in navigator)navigator.vibrate(s==="light"?1:s==="medium"?4:8);}catch{}}
 function withTap<T extends unknown[]>(fn:(...a:T)=>void,s:"light"|"medium"|"heavy"="light"){return(...a:T)=>{tap(s);fn(...a);};}
+function clearClientStorage(){
+  try{
+    if(typeof window!=="undefined"){
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+      try{window.indexedDB.deleteDatabase("firebaseLocalStorageDb");}catch{}
+    }
+  }catch{}
+}
 function fPh(v:string){let d=v.replace(/\D/g,"");while(d.startsWith("91")&&d.length>10)d=d.slice(2);if(d.startsWith("91")&&d.length>=12)d=d.slice(2);d=d.slice(0,10);let s="+91";if(d.length>0)s+=" "+d.slice(0,5);if(d.length>5)s+=" "+d.slice(5);return{display:s,digits:d};}
 function vP(d:string){if(!d.length)return{ok:false,m:""};if(d.length<10)return{ok:false,m:`${10-d.length} more digits`};if(!/^[6-9]/.test(d))return{ok:false,m:"Must start with 6-9"};return{ok:true,m:"✓ Valid"};}
 
@@ -72,7 +81,7 @@ export default function App(){
   },[]);
 
   const signIn=async()=>{
-    if(!auth||signingIn)return;
+    if(!auth||!googleProvider||signingIn)return;
     setSigningIn(true);
     try{
       const result=await signInWithPopup(auth,googleProvider);
@@ -85,6 +94,7 @@ export default function App(){
   const logOut=async()=>{
     if(auth){
       try{await signOut(auth);}catch(e){console.error(e);}
+      clearClientStorage();
       setUser(null);
       setSigningIn(false);
     }
