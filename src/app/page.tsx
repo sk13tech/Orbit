@@ -1,7 +1,16 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { onAuthStateChanged, signInWithPopup, signInWithRedirect, signOut, type User } from "firebase/auth";
-import { auth, authReady, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
+import {
+  browserLocalPersistence,
+  onAuthStateChanged,
+  setPersistence,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  signOut,
+  type User,
+} from "firebase/auth";
+import { auth, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
 import * as FS from "@/lib/firestore";
 import type { SiteConfig } from "@/lib/firestore";
 
@@ -70,49 +79,44 @@ export default function App(){
   const [signingIn,setSigningIn]=useState(false);
 
   useEffect(()=>{
-    if(!auth){setAuthLoading(false);return;}
+    if(!isFirebaseConfigured||!auth){setAuthLoading(false);return;}
+
+    setPersistence(auth, browserLocalPersistence).catch(()=>{});
+
+    getRedirectResult(auth)
+      .then(result=>{if(result?.user)setUser(result.user);})
+      .catch(()=>{});
+
     const unsub=onAuthStateChanged(auth,(u)=>{
       setUser(u);
       setAuthLoading(false);
-      setSigningIn(false);
     });
-    if(auth.currentUser){
-      setUser(auth.currentUser);
-      setAuthLoading(false);
-      setSigningIn(false);
-    }
-    return ()=>unsub();
+    return unsub;
   },[]);
 
-  const signIn=async()=>{
-    if(!auth||!googleProvider||signingIn)return;
+  const signIn=useCallback(async()=>{
+    if(!isFirebaseConfigured||!auth||!googleProvider||signingIn)return;
     setSigningIn(true);
     try{
-      const result=await signInWithPopup(auth,googleProvider);
-      if(result?.user){
-        setUser(result.user);
-        setSigningIn(false);
-        return;
+      await signInWithPopup(auth,googleProvider);
+    }catch(e:unknown){
+      const err=e as {code?:string};
+      if(err?.code==="auth/popup-blocked"||err?.code==="auth/unauthorized-domain"||err?.code==="auth/popup-closed-by-user"){
+        try{await signInWithRedirect(auth,googleProvider);}catch{}
       }
-    }catch(e){
-      console.error("Popup sign-in error:",e);
-      try{
-        await signInWithRedirect(auth,googleProvider);
-        return;
-      }catch(e2){
-        console.error("Redirect fallback error:",e2);
-      }
-    }
-    setSigningIn(false);
-  };
-  const logOut=async()=>{
-    if(auth){
-      try{await signOut(auth);}catch(e){console.error(e);}
-      clearClientStorage();
-      setUser(null);
+    }finally{
       setSigningIn(false);
     }
-  };
+  },[signingIn]);
+
+  const logOut=useCallback(async()=>{
+    if(!isFirebaseConfigured||!auth||signingIn)return;
+    setSigningIn(true);
+    try{await signOut(auth);}catch{}
+    clearClientStorage();
+    setUser(null);
+    setSigningIn(false);
+  },[signingIn]);
   const closeNav=()=>{setNavClosing(true);setTimeout(()=>{setNav(false);setNavClosing(false);},250);};
 
   const [cfg,setCfg]=useState<SiteConfig>({siteName:"Orbit",contactEmail:"sitaenterprisespvtltd@gmail.com",logoUrl:"/logo.png"});
