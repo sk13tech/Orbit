@@ -2,7 +2,7 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import {
   getAuth,
   GoogleAuthProvider,
-  browserLocalPersistence,
+  browserSessionPersistence,
   setPersistence,
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -26,8 +26,9 @@ const app = isFirebaseConfigured
   : null;
 
 export const auth = app ? getAuth(app) : null;
+// Session persistence = less tracking, less stale auth residue than local persistence
 export const authReady = auth
-  ? setPersistence(auth, browserLocalPersistence)
+  ? setPersistence(auth, browserSessionPersistence)
       .then(() => auth)
       .catch(() => auth)
   : Promise.resolve(null);

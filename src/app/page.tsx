@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { onAuthStateChanged, getRedirectResult, signInWithPopup, signInWithRedirect, signOut, type User } from "firebase/auth";
+import { onAuthStateChanged, getRedirectResult, signInWithRedirect, signOut, type User } from "firebase/auth";
 import { auth, authReady, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
 import * as FS from "@/lib/firestore";
 import type { SiteConfig } from "@/lib/firestore";
@@ -20,6 +20,25 @@ function tap(s:"light"|"medium"|"heavy"="light"){try{if(typeof navigator!=="unde
 function withTap<T extends unknown[]>(fn:(...a:T)=>void,s:"light"|"medium"|"heavy"="light"){return(...a:T)=>{tap(s);fn(...a);};}
 function fPh(v:string){let d=v.replace(/\D/g,"");while(d.startsWith("91")&&d.length>10)d=d.slice(2);if(d.startsWith("91")&&d.length>=12)d=d.slice(2);d=d.slice(0,10);let s="+91";if(d.length>0)s+=" "+d.slice(0,5);if(d.length>5)s+=" "+d.slice(5);return{display:s,digits:d};}
 function vP(d:string){if(!d.length)return{ok:false,m:""};if(d.length<10)return{ok:false,m:`${10-d.length} more digits`};if(!/^[6-9]/.test(d))return{ok:false,m:"Must start with 6-9"};return{ok:true,m:"✓ Valid"};}
+
+async function clearFirebaseClientState(){
+  try{
+    if(typeof window!=="undefined"){
+      const stores=[window.localStorage, window.sessionStorage];
+      stores.forEach(store=>{
+        const keys:string[]=[];
+        for(let i=0;i<store.length;i++){
+          const k=store.key(i);
+          if(k && (k.startsWith("firebase:") || k.includes("firebase"))) keys.push(k);
+        }
+        keys.forEach(k=>store.removeItem(k));
+      });
+      if("indexedDB" in window){
+        try{ window.indexedDB.deleteDatabase("firebaseLocalStorageDb"); }catch{}
+      }
+    }
+  }catch{}
+}
 
 /* Icons — all stroke, 1.6 weight, monochrome */
 const I={
@@ -84,23 +103,22 @@ export default function App(){
     setSigningIn(true);
     await authReady;
     try{
-      const result=await signInWithPopup(auth,googleProvider);
-      if(result.user){
-        setUser(result.user);
-        setSigningIn(false);
-        return;
-      }
-      setSigningIn(false);
-    }catch(e:unknown){
-      console.error("Sign-in error:",e);
-      const err=e as {code?:string};
-      if(err.code==="auth/popup-blocked"||err.code==="auth/popup-closed-by-user"||err.code==="auth/cancelled-popup-request"){
-        try{ await signInWithRedirect(auth,googleProvider); return; }catch(e2){ console.error("Redirect fallback failed:",e2); }
-      }
+      await clearFirebaseClientState();
+      // Redirect flow is more reliable across PWA/mobile/sandbox environments
+      await signInWithRedirect(auth,googleProvider);
+    }catch(e){
+      console.error("Redirect sign-in error:",e);
       setSigningIn(false);
     }
   };
-  const logOut=async()=>{if(auth){await signOut(auth);setUser(null);}};
+  const logOut=async()=>{
+    if(auth){
+      try{ await signOut(auth); }catch(e){ console.error(e); }
+      await clearFirebaseClientState();
+      setUser(null);
+      setSigningIn(false);
+    }
+  };
   const closeNav=()=>{setNavClosing(true);setTimeout(()=>{setNav(false);setNavClosing(false);},250);};
 
   const [cfg,setCfg]=useState<SiteConfig>({siteName:"Orbit",contactEmail:"sitaenterprisespvtltd@gmail.com"});
@@ -324,8 +342,8 @@ export default function App(){
         <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm px-5 py-3.5 flex items-center justify-between" style={{boxShadow:"0 1px 0 #ECEEE8"}}>
           <button onClick={withTap(()=>setNav(true))} className="p-2 -ml-2 rounded-xl text-[#1A1A1A] active:scale-90 transition-transform">{I.menu}</button>
           <span className="text-[17px] font-bold text-[#1A1A1A] tracking-tight">{cfg.siteName}</span>
-          <button onClick={withTap(openNew)} className="w-9 h-9 bg-[#1A1A1A] text-white rounded-2xl flex items-center justify-center active:scale-90 transition-transform overflow-hidden">
-            <Image src="/logo.png" alt={cfg.siteName} width={18} height={18} className="rounded-sm" />
+          <button onClick={withTap(openNew)} className="w-9 h-9 bg-[#1A1A1A] text-white rounded-2xl flex items-center justify-center active:scale-90 transition-transform">
+            {I.plus}
           </button>
         </div>
 
@@ -393,7 +411,7 @@ export default function App(){
                 <p className="text-[15px] font-semibold text-[#1A1A1A] mb-1">No leads yet</p>
                 <p className="text-[13px] text-[#9CA3AF] mb-4">Tap + to add your first lead</p>
                 <button onClick={withTap(openNew)} className="px-5 py-2.5 bg-[#1A1A1A] text-white rounded-2xl text-[13px] font-semibold active:scale-[0.97] transition-transform flex items-center gap-2 mx-auto">
-                  <Image src="/logo.png" alt={cfg.siteName} width={16} height={16} className="rounded-sm" />
+                  {I.plus}
                   Add Lead
                 </button>
               </div>:cur.map(l=><LC key={l.id} lead={l}/>)}
