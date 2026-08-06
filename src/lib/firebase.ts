@@ -1,9 +1,12 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import {
+  initializeAuth,
   getAuth,
   GoogleAuthProvider,
+  browserPopupRedirectResolver,
+  indexedDBLocalPersistence,
   browserLocalPersistence,
-  setPersistence,
+  browserSessionPersistence,
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -22,12 +25,27 @@ const app = isFirebaseConfigured
   ? (getApps().length ? getApp() : initializeApp(cfg))
   : null;
 
-export const auth = app ? getAuth(app) : null;
-export const authReady = auth
-  ? setPersistence(auth, browserLocalPersistence)
-      .then(() => auth)
-      .catch(() => auth)
-  : Promise.resolve(null);
+// IMPORTANT: initializeAuth with persistence + redirect resolver up front.
+// This avoids redirect sign-in getting lost after the provider returns.
+export const auth = app
+  ? (() => {
+      try {
+        return initializeAuth(app, {
+          persistence: [
+            indexedDBLocalPersistence,
+            browserLocalPersistence,
+            browserSessionPersistence,
+          ],
+          popupRedirectResolver: browserPopupRedirectResolver,
+        });
+      } catch {
+        // If auth was already initialized elsewhere, fall back safely.
+        return getAuth(app);
+      }
+    })()
+  : null;
+
+export const authReady = Promise.resolve(auth);
 
 export const googleProvider = auth ? new GoogleAuthProvider() : null;
 if (googleProvider) {
