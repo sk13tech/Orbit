@@ -35,7 +35,7 @@ export default function TermsPage() {
             <h1 className="text-[24px] font-extrabold text-[#1A1A1A] tracking-tight mb-2">Terms of Use</h1>
             <p className="text-[14px] text-[#6B7280] leading-relaxed">Please read these terms carefully before using Orbit. By using our services, you agree to comply with and be bound by these terms and conditions.</p>
             <div className="mt-4 pt-3 border-t border-[#F3F4F0] flex items-center justify-between">
-              <p className="text-[12px] text-[#9CA3AF]">Sita Enterprises Pvt. Ltd.</p>
+              <p className="text-[12px] text-[#9CA3AF]">Orbit</p>
               <p className="text-[12px] text-[#9CA3AF]">{new Date().toLocaleDateString("en-IN", { month: "long", year: "numeric" })}</p>
             </div>
           </div>
