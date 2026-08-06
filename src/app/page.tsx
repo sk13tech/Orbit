@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
+import { onAuthStateChanged, getRedirectResult, signInWithPopup, signInWithRedirect, signOut, type User } from "firebase/auth";
 import { auth, authReady, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
 import * as FS from "@/lib/firestore";
 import type { SiteConfig } from "@/lib/firestore";
@@ -83,6 +83,7 @@ export default function App(){
     (async()=>{
       if(!auth){setAuthLoading(false);return;}
       await authReady;
+      try{ await getRedirectResult(auth); }catch(e){ console.error("Redirect result error:", e); }
       unsub=onAuthStateChanged(auth,(u)=>{
         setUser(u);
         setAuthLoading(false);
@@ -102,28 +103,27 @@ export default function App(){
     setSigningIn(true);
     try{
       await authReady;
-      // Ensure a clean auth state before opening Google account chooser
-      if(auth.currentUser){
-        await signOut(auth).catch(()=>{});
-      }
       const result=await signInWithPopup(auth,googleProvider);
       if(result?.user){
         await result.user.getIdToken(true).catch(()=>{});
         setUser(result.user);
+        setSigningIn(false);
+        return;
       }
-    }catch(e){
+    }catch(e:unknown){
       console.error("Sign-in error:",e);
-    }finally{
-      setSigningIn(false);
+      const err=e as {code?:string};
+      if(err.code==="auth/internal-error"||err.code==="auth/popup-blocked"||err.code==="auth/popup-closed-by-user"||err.code==="auth/cancelled-popup-request"){
+        try{ await signInWithRedirect(auth,googleProvider); return; }catch(e2){ console.error("Redirect fallback failed:",e2); }
+      }
     }
+    setSigningIn(false);
   };
   const logOut=async()=>{
     if(auth){
       try{ await signOut(auth); }catch(e){ console.error(e); }
       setUser(null);
       setSigningIn(false);
-      // Force a clean UI state after logout
-      setTimeout(()=>{ if(typeof window!=="undefined") window.location.reload(); }, 50);
     }
   };
   const closeNav=()=>{setNavClosing(true);setTimeout(()=>{setNav(false);setNavClosing(false);},250);};
