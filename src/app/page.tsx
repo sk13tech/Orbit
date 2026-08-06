@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { onAuthStateChanged, getRedirectResult, signInWithRedirect, signOut, type User } from "firebase/auth";
+import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
 import { auth, authReady, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
 import * as FS from "@/lib/firestore";
 import type { SiteConfig } from "@/lib/firestore";
@@ -83,7 +83,6 @@ export default function App(){
     (async()=>{
       if(!auth){setAuthLoading(false);return;}
       await authReady;
-      try{ await getRedirectResult(auth); }catch(e){ console.error("Redirect result error:", e); }
       unsub=onAuthStateChanged(auth,(u)=>{
         setUser(u);
         setAuthLoading(false);
@@ -101,22 +100,30 @@ export default function App(){
   const signIn=async()=>{
     if(!auth||signingIn)return;
     setSigningIn(true);
-    await authReady;
     try{
-      await clearFirebaseClientState();
-      // Redirect flow is more reliable across PWA/mobile/sandbox environments
-      await signInWithRedirect(auth,googleProvider);
+      await authReady;
+      // Ensure a clean auth state before opening Google account chooser
+      if(auth.currentUser){
+        await signOut(auth).catch(()=>{});
+      }
+      const result=await signInWithPopup(auth,googleProvider);
+      if(result?.user){
+        await result.user.getIdToken(true).catch(()=>{});
+        setUser(result.user);
+      }
     }catch(e){
-      console.error("Redirect sign-in error:",e);
+      console.error("Sign-in error:",e);
+    }finally{
       setSigningIn(false);
     }
   };
   const logOut=async()=>{
     if(auth){
       try{ await signOut(auth); }catch(e){ console.error(e); }
-      await clearFirebaseClientState();
       setUser(null);
       setSigningIn(false);
+      // Force a clean UI state after logout
+      setTimeout(()=>{ if(typeof window!=="undefined") window.location.reload(); }, 50);
     }
   };
   const closeNav=()=>{setNavClosing(true);setTimeout(()=>{setNav(false);setNavClosing(false);},250);};
