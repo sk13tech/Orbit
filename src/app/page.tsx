@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
-import { auth, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
+import { onAuthStateChanged, getRedirectResult, signInWithRedirect, signOut, type User } from "firebase/auth";
+import { auth, authReady, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
 import * as FS from "@/lib/firestore";
 import type { SiteConfig } from "@/lib/firestore";
 
@@ -71,25 +71,42 @@ export default function App(){
   const [signingIn,setSigningIn]=useState(false);
 
   useEffect(()=>{
-    if(!auth){setAuthLoading(false);return;}
-    const unsub=onAuthStateChanged(auth,(u)=>{
-      setUser(u);
-      setAuthLoading(false);
-      setSigningIn(false);
-    });
-    return unsub;
+    let unsub=()=>{};
+    (async()=>{
+      if(!auth){setAuthLoading(false);return;}
+      await authReady;
+      try{
+        const result=await getRedirectResult(auth);
+        if(result?.user) setUser(result.user);
+      }catch(e){
+        console.error("Redirect result error:",e);
+      }
+      unsub=onAuthStateChanged(auth,(u)=>{
+        setUser(u);
+        setAuthLoading(false);
+        setSigningIn(false);
+      });
+      if(auth.currentUser){
+        setUser(auth.currentUser);
+        setAuthLoading(false);
+        setSigningIn(false);
+      }
+    })();
+    return ()=>unsub();
   },[]);
 
   const signIn=async()=>{
     if(!auth||!googleProvider||signingIn)return;
     setSigningIn(true);
     try{
-      const result=await signInWithPopup(auth,googleProvider);
-      if(result?.user) setUser(result.user);
+      if(typeof window!=="undefined") sessionStorage.setItem("orbit_auth_redirect","1");
+      await authReady;
+      await signInWithRedirect(auth,googleProvider);
+      return;
     }catch(e){
       console.error("Sign-in error:",e);
+      setSigningIn(false);
     }
-    setSigningIn(false);
   };
   const logOut=async()=>{
     if(auth){

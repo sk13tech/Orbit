@@ -1,5 +1,10 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  browserLocalPersistence,
+  setPersistence,
+} from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const cfg = {
@@ -11,17 +16,27 @@ const cfg = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-export const isFirebaseConfigured = !!(cfg.apiKey && cfg.projectId);
+export const isFirebaseConfigured = !!(cfg.apiKey && cfg.projectId && cfg.appId);
 
 const app = isFirebaseConfigured
   ? (getApps().length ? getApp() : initializeApp(cfg))
   : null;
 
 export const auth = app ? getAuth(app) : null;
-export const googleProvider = app ? new GoogleAuthProvider() : null;
-export const db = app ? getFirestore(app) : null;
+export const authReady = auth
+  ? setPersistence(auth, browserLocalPersistence)
+      .then(() => auth)
+      .catch(() => auth)
+  : Promise.resolve(null);
 
-export function getDb() {
-  if (!db) throw new Error("Firebase not configured");
-  return db;
+export const googleProvider = auth ? new GoogleAuthProvider() : null;
+if (googleProvider) {
+  googleProvider.setCustomParameters({ prompt: "select_account" });
 }
+
+const _db = app ? getFirestore(app) : null;
+export function getDb() {
+  if (!_db) throw new Error("Firebase not configured");
+  return _db;
+}
+export const db = _db;
