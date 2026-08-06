@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { onAuthStateChanged, getRedirectResult, signInWithPopup, signInWithRedirect, signOut, type User } from "firebase/auth";
-import { auth, authReady, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
+import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
+import { auth, googleProvider, isFirebaseConfigured } from "@/lib/firebase";
 import * as FS from "@/lib/firestore";
 import type { SiteConfig } from "@/lib/firestore";
 
@@ -21,24 +21,7 @@ function withTap<T extends unknown[]>(fn:(...a:T)=>void,s:"light"|"medium"|"heav
 function fPh(v:string){let d=v.replace(/\D/g,"");while(d.startsWith("91")&&d.length>10)d=d.slice(2);if(d.startsWith("91")&&d.length>=12)d=d.slice(2);d=d.slice(0,10);let s="+91";if(d.length>0)s+=" "+d.slice(0,5);if(d.length>5)s+=" "+d.slice(5);return{display:s,digits:d};}
 function vP(d:string){if(!d.length)return{ok:false,m:""};if(d.length<10)return{ok:false,m:`${10-d.length} more digits`};if(!/^[6-9]/.test(d))return{ok:false,m:"Must start with 6-9"};return{ok:true,m:"✓ Valid"};}
 
-async function clearFirebaseClientState(){
-  try{
-    if(typeof window!=="undefined"){
-      const stores=[window.localStorage, window.sessionStorage];
-      stores.forEach(store=>{
-        const keys:string[]=[];
-        for(let i=0;i<store.length;i++){
-          const k=store.key(i);
-          if(k && (k.startsWith("firebase:") || k.includes("firebase"))) keys.push(k);
-        }
-        keys.forEach(k=>store.removeItem(k));
-      });
-      if("indexedDB" in window){
-        try{ window.indexedDB.deleteDatabase("firebaseLocalStorageDb"); }catch{}
-      }
-    }
-  }catch{}
-}
+
 
 /* Icons — all stroke, 1.6 weight, monochrome */
 const I={
@@ -79,49 +62,29 @@ export default function App(){
   const [signingIn,setSigningIn]=useState(false);
 
   useEffect(()=>{
-    let unsub=()=>{};
-    (async()=>{
-      if(!auth){setAuthLoading(false);return;}
-      await authReady;
-      try{ await getRedirectResult(auth); }catch(e){ console.error("Redirect result error:", e); }
-      unsub=onAuthStateChanged(auth,(u)=>{
-        setUser(u);
-        setAuthLoading(false);
-        setSigningIn(false);
-      });
-      if(auth.currentUser){
-        setUser(auth.currentUser);
-        setAuthLoading(false);
-        setSigningIn(false);
-      }
-    })();
-    return()=>unsub();
+    if(!auth){setAuthLoading(false);return;}
+    const unsub=onAuthStateChanged(auth,(u)=>{
+      setUser(u);
+      setAuthLoading(false);
+      setSigningIn(false);
+    });
+    return unsub;
   },[]);
 
   const signIn=async()=>{
     if(!auth||signingIn)return;
     setSigningIn(true);
     try{
-      await authReady;
       const result=await signInWithPopup(auth,googleProvider);
-      if(result?.user){
-        await result.user.getIdToken(true).catch(()=>{});
-        setUser(result.user);
-        setSigningIn(false);
-        return;
-      }
-    }catch(e:unknown){
+      if(result?.user) setUser(result.user);
+    }catch(e){
       console.error("Sign-in error:",e);
-      const err=e as {code?:string};
-      if(err.code==="auth/internal-error"||err.code==="auth/popup-blocked"||err.code==="auth/popup-closed-by-user"||err.code==="auth/cancelled-popup-request"){
-        try{ await signInWithRedirect(auth,googleProvider); return; }catch(e2){ console.error("Redirect fallback failed:",e2); }
-      }
     }
     setSigningIn(false);
   };
   const logOut=async()=>{
     if(auth){
-      try{ await signOut(auth); }catch(e){ console.error(e); }
+      try{await signOut(auth);}catch(e){console.error(e);}
       setUser(null);
       setSigningIn(false);
     }

@@ -1,10 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  browserSessionPersistence,
-  setPersistence,
-} from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -20,26 +15,17 @@ export const isFirebaseConfigured =
   !!firebaseConfig.apiKey && !!firebaseConfig.projectId && !!firebaseConfig.appId;
 
 const app = isFirebaseConfigured
-  ? getApps().length
-    ? getApp()
-    : initializeApp(firebaseConfig)
+  ? getApps().length ? getApp() : initializeApp(firebaseConfig)
   : null;
 
 export const auth = app ? getAuth(app) : null;
-// Session persistence = less tracking, less stale auth residue than local persistence
-export const authReady = auth
-  ? setPersistence(auth, browserSessionPersistence)
-      .then(() => auth)
-      .catch(() => auth)
-  : Promise.resolve(null);
 
 const _db = app ? getFirestore(app) : null;
-
 export function getDb() {
   if (!_db) throw new Error("Firebase not configured");
   return _db;
 }
-
 export const db = _db;
+
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: "select_account" });
