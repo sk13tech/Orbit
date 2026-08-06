@@ -326,7 +326,7 @@ export default function App(){
   /* ═══ AUTH SCREENS ═══ */
   if(authLoading) return(
     <div className="min-h-screen bg-[#F4F5F0] flex items-center justify-center">
-      <div className="text-center"><span className="text-[18px] font-bold text-[#1A1A1A]">Orbit</span><p className="text-[14px] text-[#9CA3AF] mt-2">Loading...</p></div>
+      <div className="text-center"><span className="brand-font text-[20px] font-semibold text-[#1A1A1A]">Orbit</span><p className="text-[14px] text-[#9CA3AF] mt-2">Loading...</p></div>
     </div>
   );
 
@@ -340,7 +340,7 @@ export default function App(){
         {/* Header */}
         <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm px-5 py-3.5 flex items-center justify-between" style={{boxShadow:"0 1px 0 #ECEEE8"}}>
           <button onClick={withTap(()=>setNav(true))} className="p-2 -ml-2 rounded-xl text-[#1A1A1A] active:scale-90 transition-transform">{I.menu}</button>
-          <span className="text-[17px] font-bold text-[#1A1A1A] tracking-tight">{cfg.siteName}</span>
+          <span className="brand-font text-[26px] font-semibold text-[#1A1A1A] tracking-tight leading-none">{cfg.siteName}</span>
           <button onClick={withTap(openNew)} className="w-9 h-9 bg-[#1A1A1A] text-white rounded-2xl flex items-center justify-center active:scale-90 transition-transform">
             {I.plus}
           </button>
@@ -422,7 +422,7 @@ export default function App(){
 
       {/* Nav */}
       {nav&&(<div className={`fixed inset-0 z-50 ${navClosing?"a-fadeOut":"a-fadeIn"}`}><div className="absolute inset-0 overlay" onClick={closeNav}/><div className={`absolute left-0 top-0 bottom-0 w-[280px] bg-white flex flex-col ${navClosing?"a-slideOut":"a-slideIn"}`} style={{boxShadow:"4px 0 32px rgba(0,0,0,0.06)"}}>
-        <div className="px-5 pt-5 pb-4 flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl overflow-hidden" style={{boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><img src={logoSrc} alt={cfg.siteName} className="w-full h-full object-cover" referrerPolicy="no-referrer"/></div><div><span className="text-[16px] font-bold text-[#1A1A1A] block leading-tight">{cfg.siteName}</span><span className="text-[12px] text-[#9CA3AF]">Lead Management</span></div></div><button onClick={withTap(closeNav)} className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#9CA3AF] active:scale-90 transition-transform" style={{boxShadow:"0 1px 4px rgba(0,0,0,0.08)"}}>{I.back}</button></div>
+        <div className="px-5 pt-5 pb-4 flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl overflow-hidden" style={{boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><img src={logoSrc} alt={cfg.siteName} className="w-full h-full object-cover" referrerPolicy="no-referrer"/></div><div><span className="brand-font text-[18px] font-semibold text-[#1A1A1A] block leading-tight">{cfg.siteName}</span><span className="text-[12px] text-[#9CA3AF]">Lead Management</span></div></div><button onClick={withTap(closeNav)} className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#9CA3AF] active:scale-90 transition-transform" style={{boxShadow:"0 1px 4px rgba(0,0,0,0.08)"}}>{I.back}</button></div>
         <div className="mx-5 h-px bg-[#F3F4F0]"/>
         <div className="px-5 pt-5 flex-1">
           <p className="text-[10px] text-[#9CA3AF] font-bold uppercase tracking-[0.12em] mb-4">Menu</p>
@@ -528,7 +528,8 @@ export default function App(){
 <img src={logoSrc} alt={cfg.siteName} className="w-full h-full object-cover" referrerPolicy="no-referrer"/>
             </div>
             <h2 className="text-[20px] font-bold text-[#1A1A1A] tracking-tight leading-tight">Welcome back</h2>
-            <p className="text-[13px] text-[#9CA3AF] mt-1.5 mb-7">Sign in to continue to {cfg.siteName}</p>
+            <p className="brand-font text-[22px] font-semibold text-[#1A1A1A] mt-1.5 mb-2 leading-none">{cfg.siteName}</p>
+            <p className="text-[13px] text-[#9CA3AF] mb-7">Sign in to continue</p>
             <button onClick={signIn} disabled={signingIn} className="w-full py-3.5 rounded-2xl text-[14px] font-semibold text-[#1A1A1A] flex items-center justify-center gap-2.5 active:scale-[0.97] transition-transform disabled:opacity-50" style={{border:"1px solid #E8E8E8",background:"#fff"}}>
               {signingIn?<span className="text-[#9CA3AF]">Signing in...</span>:<>{GoogleIcon} Continue with Google</>}
             </button>
