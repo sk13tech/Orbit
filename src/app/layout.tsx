@@ -8,10 +8,13 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "Orbit",
   },
-  icons: { apple: "/logo.png" },
+  icons: {
+    apple: "/logo.png",
+    icon: "/logo.png",
+  },
 };
 
 export const viewport: Viewport = {
@@ -19,7 +22,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#1A1A1A",
+  themeColor: "#000000",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -28,6 +31,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <link rel="apple-touch-icon" href="/logo.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="theme-color" content="#000000" />
       </head>
       <body>
         {children}

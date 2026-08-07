@@ -172,11 +172,19 @@ export default function App(){
   const setSt=async(id:string,s:string)=>{
     const updates: Record<string,unknown> = {status:s};
     if(s==="closed") updates.notes="Closed lead";
-    await FS.updateLead(id,updates);la();
+    await FS.updateLead(id,updates);
+    if(s==="closed"){try{await FS.createLog(id,"Lead closed — marked as Won");}catch{}}
+    if(s==="lost"){try{await FS.createLog(id,"Lead lost");}catch{}}
+    la();
   };
   const rm=async(id:string)=>{await FS.deleteLead(id);setDel(null);setExp(null);la();};
-  const openLogs=async(l:Lead)=>{setLogLead(l);setLogSheet(true);setAddLog(false);setRemark("");const logs=await FS.getLogs(l.id);setLogs(logs);};
+  const [editLogId,setEditLogId]=useState<string|null>(null);
+  const [editLogText,setEditLogText]=useState("");
+  const openLogs=async(l:Lead)=>{setLogLead(l);setLogSheet(true);setAddLog(false);setEditLogId(null);setRemark("");const logs=await FS.getLogs(l.id);setLogs(logs);};
   const savLog=async()=>{if(!remark||!logLead)return;const n=await FS.createLog(logLead.id,remark);setLogs(p=>[n,...p]);setLc(p=>({...p,[logLead.id]:(p[logLead.id]||0)+1}));setRemark("");setAddLog(false);};
+  const delLog=async(logId:string)=>{if(!logLead)return;try{await FS.deleteLog(logId);setLogs(p=>p.filter(l=>l.id!==logId));setLc(p=>({...p,[logLead.id]:Math.max((p[logLead.id]||1)-1,0)}));}catch(e){console.error(e);}};
+  const startEditLog=(log:Log)=>{setEditLogId(log.id);setEditLogText(log.remark);setAddLog(false);};
+  const saveEditLog=async()=>{if(!editLogId||!editLogText)return;try{await FS.updateLog(editLogId,editLogText);setLogs(p=>p.map(l=>l.id===editLogId?{...l,remark:editLogText}:l));setEditLogId(null);setEditLogText("");}catch(e){console.error(e);}};
   const csv=async()=>{
     if(!user)return;
     try{
@@ -205,15 +213,14 @@ export default function App(){
   /* ── Accent Colors ── */
   const ac={blue:"#3B5BDB",green:"#2B8A3E",red:"#E03131",amber:"#E67700",purple:"#7048E8",teal:"#0C8599"};
 
-  /* ── Action Pill ── */
+  /* ── Action Pill — iOS Safari compatible ── */
   const Pill=({children,onClick,href,c="#3B5BDB"}:{children:React.ReactNode;onClick?:()=>void;href?:string;c?:string})=>{
-    const cls="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-[13px] font-semibold active:scale-[0.96] transition-transform";
-    const h=onClick?withTap(onClick):undefined;
-    // Only allow tel: and https: protocols — block javascript:, data:, etc.
+    const cls="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-[13px] font-semibold select-none cursor-pointer";
+    const st={color:c,backgroundColor:c+"12",touchAction:"manipulation" as const,WebkitTapHighlightColor:"transparent"};
     const safeHref=href&&/^(tel:|https:)/.test(href)?href:undefined;
-    if(safeHref)return<a href={safeHref} rel="noopener noreferrer" className={cls} style={{color:c,backgroundColor:c+"12"}} onClick={()=>tap()}>{children}</a>;
-    if(href&&!safeHref)return<button className={cls} style={{color:c,backgroundColor:c+"12"}}>{children}</button>;
-    return<button onClick={h} className={cls} style={{color:c,backgroundColor:c+"12"}}>{children}</button>;
+    if(safeHref)return<a href={safeHref} rel="noopener noreferrer" className={cls} style={st} onClick={(e)=>{e.stopPropagation();tap();}}>{children}</a>;
+    const handle=(e:React.MouseEvent|React.TouchEvent)=>{e.stopPropagation();e.preventDefault();if(onClick){tap();onClick();}};
+    return<button type="button" onClick={handle} onTouchEnd={handle} className={cls} style={st}>{children}</button>;
   };
 
   /* ── Alert Card (premium) ── */
@@ -273,7 +280,7 @@ export default function App(){
             <Pill onClick={()=>openLogs(lead)} c={ac.blue}>{I.msg} {lc[lead.id]?`${lc[lead.id]}`:"Log"}</Pill>
             {lead.status==="in_progress"&&<><Pill onClick={()=>setSt(lead.id,"closed")} c={ac.green}>{I.check} Won</Pill><Pill onClick={()=>setSt(lead.id,"lost")} c={ac.red}>{I.x} Lost</Pill></>}
             {(lead.status==="closed"||lead.status==="lost")&&<Pill onClick={()=>setSt(lead.id,"in_progress")} c={ac.blue}>{I.redo} Reopen</Pill>}
-            <button onClick={withTap(()=>setDel(lead),"medium")} className="p-2.5 rounded-2xl text-[#E03131] active:scale-90 transition-transform" style={{backgroundColor:"#E0313112"}}>{I.trash}</button>
+            <button type="button" onClick={(e)=>{e.stopPropagation();e.preventDefault();tap("medium");setDel(lead);}} onTouchEnd={(e)=>{e.stopPropagation();e.preventDefault();tap("medium");setDel(lead);}} className="p-2.5 rounded-2xl text-[#E03131] select-none cursor-pointer" style={{backgroundColor:"#E0313112",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}}>{I.trash}</button>
           </div>
         </div>
       )}
@@ -495,7 +502,17 @@ export default function App(){
         {addLog&&(<div className={`${C} p-4 mb-4`} style={CS}><p className="text-[12px] text-[#9CA3AF] font-medium mb-2">{fmt(td())} · auto</p><textarea value={remark} onChange={e=>setRemark(e.target.value)} placeholder="Enter remark..." rows={3} autoFocus className="w-full bg-[#F4F5F0] rounded-xl px-4 py-3 text-[15px] text-[#1A1A1A] focus:outline-none resize-none placeholder-[#D1D5DB] font-medium"/><div className="flex gap-3 mt-3"><button onClick={withTap(()=>setAddLog(false))} className="flex-1 py-3 text-[#9CA3AF] text-[14px] font-medium rounded-xl">Cancel</button><button onClick={withTap(savLog,"medium")} className="flex-1 py-3 bg-[#1A1A1A] text-white rounded-xl text-[14px] font-bold active:scale-[0.98] transition-transform">Save</button></div></div>)}
         <div className="pb-6">
           {logs.length===0&&!addLog?<div className="text-center py-12"><p className="text-[#D1D5DB] text-[15px] font-medium mb-4">No logs yet</p><button onClick={withTap(()=>{setAddLog(true);setRemark("");})} className="px-5 py-3 bg-[#1A1A1A] text-white rounded-2xl text-[14px] font-bold active:scale-[0.97] transition-transform">Add First Log</button></div>
-          :<div className="relative">{logs.length>0&&<div className="absolute left-[8px] top-3 bottom-3 w-0.5 bg-[#F3F4F0] rounded-full"/>}<div className="space-y-4">{logs.map(log=>(<div key={log.id} className="flex gap-4 relative"><div className="w-4 h-4 rounded-full bg-[#3B5BDB] shrink-0 mt-0.5 z-10 border-[3px] border-white"/><div className="flex-1"><p className="text-[11px] text-[#3B5BDB] font-bold">{fmt(log.date)}</p><div className={`${C} p-3.5 mt-1.5`} style={CS}><p className="text-[14px] text-[#1A1A1A] leading-relaxed">{log.remark}</p></div></div></div>))}</div></div>}
+          :<div className="relative">{logs.length>0&&<div className="absolute left-[8px] top-3 bottom-3 w-0.5 bg-[#F3F4F0] rounded-full"/>}<div className="space-y-4">{logs.map(log=>(<div key={log.id} className="flex gap-4 relative"><div className="w-4 h-4 rounded-full bg-[#3B5BDB] shrink-0 mt-0.5 z-10 border-[3px] border-white"/><div className="flex-1">
+            <div className="flex items-center justify-between"><p className="text-[11px] text-[#3B5BDB] font-bold">{fmt(log.date)}</p><div className="flex gap-1">
+              <button type="button" onClick={(e)=>{e.stopPropagation();e.preventDefault();startEditLog(log);}} onTouchEnd={(e)=>{e.stopPropagation();e.preventDefault();startEditLog(log);}} className="p-1.5 rounded-lg text-[#9CA3AF] select-none cursor-pointer" style={{touchAction:"manipulation"}}>{I.edit}</button>
+              <button type="button" onClick={(e)=>{e.stopPropagation();e.preventDefault();tap("medium");delLog(log.id);}} onTouchEnd={(e)=>{e.stopPropagation();e.preventDefault();tap("medium");delLog(log.id);}} className="p-1.5 rounded-lg text-[#E03131] select-none cursor-pointer" style={{touchAction:"manipulation"}}>{I.trash}</button>
+            </div></div>
+            {editLogId===log.id?(
+              <div className="mt-1.5"><textarea value={editLogText} onChange={e=>setEditLogText(e.target.value)} rows={2} className="w-full bg-[#F4F5F0] rounded-xl px-3 py-2 text-[14px] text-[#1A1A1A] focus:outline-none resize-none" /><div className="flex gap-2 mt-2"><button type="button" onClick={()=>setEditLogId(null)} className="flex-1 py-2 text-[#9CA3AF] text-[13px] font-medium rounded-lg">Cancel</button><button type="button" onClick={saveEditLog} className="flex-1 py-2 bg-[#1A1A1A] text-white text-[13px] font-semibold rounded-lg">Save</button></div></div>
+            ):(
+              <div className={`${C} p-3.5 mt-1.5`} style={CS}><p className="text-[14px] text-[#1A1A1A] leading-relaxed">{log.remark}</p></div>
+            )}
+          </div></div>))}</div></div>}
         </div>
       </div></div></div>)}
 

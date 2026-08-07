@@ -260,6 +260,28 @@ export async function createLog(leadId: string, remark: string): Promise<FollowU
   return { id: ref.id, leadId, remark: cleanRemark, date: today, createdAt: new Date().toISOString() };
 }
 
+export async function updateLog(logId: string, newRemark: string): Promise<void> {
+  const uid = getAuthUid();
+  const logRef = doc(getDb(), "followUpLogs", logId);
+  const logSnap = await getDoc(logRef);
+  if (!logSnap.exists()) throw new Error("Log not found");
+  const leadSnap = await getDoc(doc(getDb(), "leads", logSnap.data().leadId));
+  if (!leadSnap.exists() || leadSnap.data().userId !== uid) throw new Error("Forbidden");
+  const clean = sanitize(newRemark, MAX_REMARK);
+  if (!clean) throw new Error("Remark is required");
+  await updateDoc(logRef, { remark: clean });
+}
+
+export async function deleteLog(logId: string): Promise<void> {
+  const uid = getAuthUid();
+  const logRef = doc(getDb(), "followUpLogs", logId);
+  const logSnap = await getDoc(logRef);
+  if (!logSnap.exists()) throw new Error("Log not found");
+  const leadSnap = await getDoc(doc(getDb(), "leads", logSnap.data().leadId));
+  if (!leadSnap.exists() || leadSnap.data().userId !== uid) throw new Error("Forbidden");
+  await deleteDoc(logRef);
+}
+
 /* ── Log Counts ── */
 export async function getLogCounts(leadIds: string[]): Promise<Record<string, number>> {
   if (leadIds.length === 0) return {};

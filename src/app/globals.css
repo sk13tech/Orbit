@@ -1,7 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Quicksand:wght@500;600;700&display=swap');
 @import "tailwindcss";
 
-* { -webkit-tap-highlight-color: transparent; }
+* { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+button, a, [role="button"] { touch-action: manipulation; -webkit-tap-highlight-color: transparent; cursor: pointer; }
 html { font-family: 'Inter', -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 body { background: #F4F5F0; color: #1A1A1A; min-height: 100vh; }
 .brand-font { font-family: 'Quicksand', 'Inter', -apple-system, system-ui, sans-serif; letter-spacing: 0.01em; }
