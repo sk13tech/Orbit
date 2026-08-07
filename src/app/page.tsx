@@ -144,7 +144,7 @@ export default function App(){
   const [fu,setFu]=useState({todayLeads:[] as Lead[],overdueLeads:[] as Lead[],upcomingLeads:[] as Lead[],totalFollowups:0});
   const [stats,setStats]=useState<Stats|null>(null);
   const [lc,setLc]=useState<Record<string,number>>({});
-  const [ph,setPh]=useState("");const [phD,setPhD]=useState("");const [nm,setNm]=useState("");const [vd,setVd]=useState(td());const [ed,setEd]=useState("");const [pr,setPr]=useState("");const [nt,setNt]=useState("");const [sv,setSv]=useState(false);
+  const [cc,setCc]=useState("+91");const [phD,setPhD]=useState("");const [nm,setNm]=useState("");const [vd,setVd]=useState(td());const [ed,setEd]=useState("");const [pr,setPr]=useState("");const [nt,setNt]=useState("");const [sv,setSv]=useState(false);
   const tmr=useRef<ReturnType<typeof setTimeout>|null>(null);
 
   useEffect(()=>{FS.getSiteConfig().then(setCfg).catch(()=>{});},[]);
@@ -156,19 +156,20 @@ export default function App(){
   const fc=useCallback(()=>{if(!user)return;FS.getLeads(user.uid).then(leads=>{const ids=leads.map(l=>l.id);FS.getLogCounts(ids).then(setLc).catch(console.error);}).catch(console.error);},[user]);
   const doSearch=useCallback(()=>{fl(q);},[q,fl]);
   useEffect(()=>{if(df||dt)fl(q);},[df,dt]);// eslint-disable-line
-  const openNew=()=>{setEditing(null);setPh("");setPhD("");setNm("");setVd(td());setEd("");setPr("");setNt("");setForm(true);};
-  const openEdit=(l:Lead)=>{setEditing(l);const d=l.phone.replace(/\D/g,"");const dg=d.startsWith("91")?d.slice(2):d;setPh(fPh(dg).display);setPhD(dg);setNm(l.name);setVd(l.dateOfVisit);setEd(l.expectedPurchaseDate);setPr(l.product);setNt(l.notes||"");setForm(true);};
-  const hP=(v:string)=>{
-    let raw=v.replace(/\D/g,"");
-    // Always strip leading "91" country code — user sees "+91" prefix already
-    if(raw.startsWith("91"))raw=raw.slice(2);
-    raw=raw.slice(0,10);
-    let display="+91";
-    if(raw.length>0)display+=" "+raw.slice(0,5);
-    if(raw.length>5)display+=" "+raw.slice(5);
-    setPh(display);setPhD(raw);
+  const openNew=()=>{setEditing(null);setCc("+91");setPhD("");setNm("");setVd(td());setEd("");setPr("");setNt("");setForm(true);};
+  const openEdit=(l:Lead)=>{
+    setEditing(l);
+    // Extract country code and number from stored phone
+    const raw=l.phone.replace(/\D/g,"");
+    let code="+91",digits=raw;
+    if(raw.startsWith("91")&&raw.length>10){code="+91";digits=raw.slice(2);}
+    else if(raw.startsWith("1")&&raw.length>10){code="+1";digits=raw.slice(1);}
+    else if(raw.length<=10){code="+91";digits=raw;}
+    setCc(code);setPhD(digits.slice(0,10));
+    setNm(l.name);setVd(l.dateOfVisit);setEd(l.expectedPurchaseDate);setPr(l.product);setNt(l.notes||"");setForm(true);
   };
-  const save=async()=>{if(!nm||!phD||!pr||!vP(phD).ok||!user)return;setSv(true);const body={name:nm,phone:fPh(phD).display,product:pr,dateOfVisit:vd,expectedPurchaseDate:ed,notes:nt||null};try{if(editing)await FS.updateLead(editing.id,body);else await FS.createLead(user.uid,body);setForm(false);la();}finally{setSv(false);}};
+  const hP=(v:string)=>{const raw=v.replace(/\D/g,"").slice(0,10);setPhD(raw);};
+  const save=async()=>{if(!nm||!phD||!pr||!vP(phD).ok||!user)return;setSv(true);const phone=`${cc} ${phD.slice(0,5)}${phD.length>5?" "+phD.slice(5):""}`;const body={name:nm,phone,product:pr,dateOfVisit:vd,expectedPurchaseDate:ed,notes:nt||null};try{if(editing)await FS.updateLead(editing.id,body);else await FS.createLead(user.uid,body);setForm(false);la();}finally{setSv(false);}};
   const setSt=async(id:string,s:string)=>{
     const updates: Record<string,unknown> = {status:s};
     if(s==="closed") updates.notes="Closed lead";
@@ -486,7 +487,30 @@ export default function App(){
         <div className="flex justify-center mb-3"><div className="w-10 h-1 bg-[#ECEEE8] rounded-full"/></div>
         <div className="flex items-center justify-between mb-5"><button onClick={withTap(()=>setForm(false))} className="text-[#9CA3AF] text-[15px] font-medium">Cancel</button><h2 className="font-bold text-[17px] text-[#1A1A1A]">{editing?"Edit Lead":"New Lead"}</h2><button onClick={withTap(save,"medium")} disabled={sv} className="text-[#3B5BDB] font-bold text-[15px]">{sv?"...":"Save"}</button></div>
         <div className={`${C} p-4 divide-y divide-[#F3F4F0] mb-4`} style={CS}>
-          {[{l:"Phone",el:<><input type="tel" value={ph||"+91"} onChange={e=>hP(e.target.value)} className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium" placeholder="+91 XXXXX XXXXX"/>{phD&&<p className={`text-[11px] mt-1 text-right font-medium ${vP(phD).ok?"text-[#2B8A3E]":"text-[#E67700]"}`}>{vP(phD).m}</p>}</>},{l:"Name *",el:<input type="text" value={nm} onChange={e=>setNm(e.target.value)} placeholder="Full name" className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium placeholder-[#D1D5DB]"/>},{l:"Visit",el:<input type="date" value={vd} onChange={e=>setVd(e.target.value)} className="bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none ml-auto block font-medium"/>},{l:"Expected *",el:<input type="date" value={ed} onChange={e=>setEd(e.target.value)} className="bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none ml-auto block font-medium"/>},{l:"Product *",el:<input type="text" value={pr} onChange={e=>setPr(e.target.value)} placeholder="Product or service" className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium placeholder-[#D1D5DB]"/>}].map(f=>(
+          {/* Phone row */}
+          <div className="flex items-center justify-between py-4 gap-4">
+            <label className="text-[15px] text-[#6B7280] shrink-0">Phone</label>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <select value={cc} onChange={e=>setCc(e.target.value)} className="bg-[#F4F5F0] rounded-xl px-2 py-2 text-[14px] text-[#1A1A1A] font-medium focus:outline-none" style={{minWidth:72}}>
+                  <option value="+91">🇮🇳 +91</option>
+                  <option value="+1">🇺🇸 +1</option>
+                  <option value="+44">🇬🇧 +44</option>
+                  <option value="+61">🇦🇺 +61</option>
+                  <option value="+971">🇦🇪 +971</option>
+                  <option value="+65">🇸🇬 +65</option>
+                  <option value="+81">🇯🇵 +81</option>
+                  <option value="+49">🇩🇪 +49</option>
+                  <option value="+86">🇨🇳 +86</option>
+                  <option value="+33">🇫🇷 +33</option>
+                </select>
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" maxLength={10} value={phD} onChange={e=>hP(e.target.value)} className="flex-1 bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium" placeholder="XXXXXXXXXX"/>
+              </div>
+              {phD&&<p className={`text-[11px] mt-1 text-right font-medium ${vP(phD).ok?"text-[#2B8A3E]":"text-[#E67700]"}`}>{vP(phD).m}</p>}
+            </div>
+          </div>
+          {/* Other fields */}
+          {[{l:"Name *",el:<input type="text" value={nm} onChange={e=>setNm(e.target.value)} placeholder="Full name" className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium placeholder-[#D1D5DB]"/>},{l:"Visit",el:<input type="date" value={vd} onChange={e=>setVd(e.target.value)} className="bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none ml-auto block font-medium"/>},{l:"Expected *",el:<input type="date" value={ed} onChange={e=>setEd(e.target.value)} className="bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none ml-auto block font-medium"/>},{l:"Product *",el:<input type="text" value={pr} onChange={e=>setPr(e.target.value)} placeholder="Product or service" className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium placeholder-[#D1D5DB]"/>}].map(f=>(
             <div key={f.l} className="flex items-center justify-between py-4 gap-4"><label className="text-[15px] text-[#6B7280] shrink-0">{f.l}</label><div className="flex-1 min-w-0">{f.el}</div></div>
           ))}
         </div>
@@ -508,7 +532,7 @@ export default function App(){
               <button type="button" onClick={(e)=>{e.stopPropagation();e.preventDefault();tap("medium");delLog(log.id);}} onTouchEnd={(e)=>{e.stopPropagation();e.preventDefault();tap("medium");delLog(log.id);}} className="p-1.5 rounded-lg text-[#E03131] select-none cursor-pointer" style={{touchAction:"manipulation"}}>{I.trash}</button>
             </div></div>
             {editLogId===log.id?(
-              <div className="mt-1.5"><textarea value={editLogText} onChange={e=>setEditLogText(e.target.value)} rows={2} className="w-full bg-[#F4F5F0] rounded-xl px-3 py-2 text-[14px] text-[#1A1A1A] focus:outline-none resize-none" /><div className="flex gap-2 mt-2"><button type="button" onClick={()=>setEditLogId(null)} className="flex-1 py-2 text-[#9CA3AF] text-[13px] font-medium rounded-lg">Cancel</button><button type="button" onClick={saveEditLog} className="flex-1 py-2 bg-[#1A1A1A] text-white text-[13px] font-semibold rounded-lg">Save</button></div></div>
+              <div className="mt-1.5"><textarea value={editLogText} onChange={e=>setEditLogText(e.target.value)} rows={2} className="w-full bg-[#F4F5F0] rounded-xl px-3 py-2 text-[14px] text-[#1A1A1A] focus:outline-none resize-none" /><div className="flex gap-2 mt-2"><button type="button" onClick={(e)=>{e.stopPropagation();e.preventDefault();setEditLogId(null);}} onTouchEnd={(e)=>{e.stopPropagation();e.preventDefault();setEditLogId(null);}} className="flex-1 py-2 text-[#9CA3AF] text-[13px] font-medium rounded-lg" style={{touchAction:"manipulation"}}>Cancel</button><button type="button" onClick={(e)=>{e.stopPropagation();e.preventDefault();saveEditLog();}} onTouchEnd={(e)=>{e.stopPropagation();e.preventDefault();saveEditLog();}} className="flex-1 py-2 bg-[#1A1A1A] text-white text-[13px] font-semibold rounded-lg" style={{touchAction:"manipulation"}}>Save</button></div></div>
             ):(
               <div className={`${C} p-3.5 mt-1.5`} style={CS}><p className="text-[14px] text-[#1A1A1A] leading-relaxed">{log.remark}</p></div>
             )}
