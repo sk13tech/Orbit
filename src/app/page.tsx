@@ -339,8 +339,13 @@ export default function App(){
             <button onClick={withTap(csv)} className="w-11 h-11 rounded-2xl bg-[#3B5BDB]/10 flex items-center justify-center text-[#3B5BDB] active:scale-90 transition-transform">{I.dl}</button>
           </div>
           <div className="flex gap-3 overflow-x-auto -mx-1 px-1 pb-1" style={{scrollbarWidth:"none"}}>
-            {[{v:stats.totalLeads,l:"Total",ic:Si.users,c:"#3B5BDB"},{v:`${stats.conversionRate}%`,l:"Convert",ic:Si.pct,c:"#E67700"},{v:stats.closed,l:"Closed",ic:Si.cc,c:"#2B8A3E"},{v:stats.inProgress,l:"Active",ic:Si.act,c:"#7048E8"},{v:stats.lost,l:"Lost",ic:Si.xc,c:"#E03131"}].map(s=>(
-              <div key={s.l} className="shrink-0 rounded-2xl px-4 py-3.5 min-w-[115px]" style={{backgroundColor:s.c+"0A"}}>
+            {[
+              {v:stats.totalLeads,l:"Total Leads",ic:Si.users,c:"#3B5BDB"},
+              {v:stats.inProgress,l:"Active Leads",ic:Si.act,c:"#7048E8"},
+              {v:stats.closed,l:"Closed Leads",ic:Si.cc,c:"#2B8A3E"},
+              {v:stats.lost,l:"Lost Leads",ic:Si.xc,c:"#E03131"}
+            ].map(s=>(
+              <div key={s.l} className="shrink-0 rounded-2xl px-4 py-3.5 min-w-[128px]" style={{backgroundColor:s.c+"0A"}}>
                 <div className="flex items-center gap-1.5 mb-2"><span style={{color:s.c}}>{s.ic}</span><span className="text-[12px] font-medium" style={{color:s.c+"99"}}>{s.l}</span></div>
                 <p className="text-[22px] font-extrabold tracking-tight leading-none" style={{color:s.c}}>{s.v}</p>
               </div>

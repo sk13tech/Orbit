@@ -108,6 +108,14 @@ function tsToStr(ts: unknown): string {
   return new Date().toISOString();
 }
 
+function localDateKey(value: string | Date): string {
+  const d = typeof value === "string" ? new Date(value) : value;
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
 function docToLead(id: string, data: Record<string, unknown>): Lead {
   return {
     id,
@@ -332,9 +340,11 @@ export async function getStats(userId: string) {
 
   const dailyBreakdown: { day: string; total: number; closed: number }[] = [];
   for (let i = 6; i >= 0; i--) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const dayStr = d.toISOString().split("T")[0];
-    const dayLeads = leads.filter(l => l.createdAt.split("T")[0] === dayStr);
+    const d = new Date();
+    d.setHours(0,0,0,0);
+    d.setDate(d.getDate() - i);
+    const dayKey = localDateKey(d);
+    const dayLeads = leads.filter(l => localDateKey(l.createdAt) === dayKey);
     dailyBreakdown.push({
       day: `${d.toLocaleDateString("en-US", { weekday: "short" })}, ${d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`,
       total: dayLeads.length,
