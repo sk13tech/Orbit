@@ -150,13 +150,21 @@ export default function App(){
 
   useEffect(()=>{FS.getSiteConfig().then(setCfg).catch(()=>{});},[]);
   useEffect(()=>{if(!user)return;la();},[user]);// eslint-disable-line
-  const la=useCallback(()=>{if(!user)return;fl();ff();fst();fc();},[user]);// eslint-disable-line
-  const fl=useCallback((s?:string)=>{if(!user)return;FS.getLeads(user.uid,s).then(setLds).catch(console.error);},[user]);
+  const fl=useCallback((s?:string)=>{
+    if(!user)return;
+    FS.getLeads(user.uid,s).then(all=>{
+      let filtered=all;
+      if(df) filtered=filtered.filter(l=>l.createdAt.split("T")[0] >= df);
+      if(dt) filtered=filtered.filter(l=>l.createdAt.split("T")[0] <= dt);
+      setLds(filtered);
+    }).catch(console.error);
+  },[user,df,dt]);
   const ff=useCallback(()=>{if(!user)return;FS.getFollowups(user.uid).then(setFu).catch(console.error);},[user]);
   const fst=useCallback(()=>{if(!user)return;FS.getStats(user.uid).then(setStats).catch(console.error);},[user]);
   const fc=useCallback(()=>{if(!user)return;FS.getLeads(user.uid).then(leads=>{const ids=leads.map(l=>l.id);FS.getLogCounts(ids).then(setLc).catch(console.error);}).catch(console.error);},[user]);
+  const la=useCallback(()=>{if(!user)return;fl();ff();fst();fc();},[user,fl,ff,fst,fc]);
   const doSearch=useCallback(()=>{fl(q);},[q,fl]);
-  useEffect(()=>{if(df||dt)fl(q);},[df,dt]);// eslint-disable-line
+  useEffect(()=>{if(df||dt)fl(q);},[df,dt,q,fl]);
   const openNew=()=>{setEditing(null);setCc("+91");setPhD("");setNm("");setVd(td());setEd("");setPr("");setNt("");setForm(true);};
   const openEdit=(l:Lead)=>{
     setEditing(l);
@@ -201,6 +209,11 @@ export default function App(){
       setEditLogText("");
     }catch(e){console.error(e);}
   };
+  const waHref=(phone:string)=>{
+    const digits=phone.replace(/\D/g,"");
+    return digits?`https://wa.me/${digits}`:"https://wa.me/";
+  };
+
   const csv=async()=>{
     if(!user)return;
     try{
@@ -256,6 +269,7 @@ export default function App(){
           </div>
           <div className="flex gap-2 mt-3 flex-wrap">
             <Pill href={`tel:${lead.phone.replace(/\s/g,"")}`} c={ac.green}>{I.phone} Call</Pill>
+            <Pill href={waHref(lead.phone)} c={ac.green}>{I.msg} WhatsApp</Pill>
             <Pill onClick={()=>openLogs(lead)} c={ac.blue}>{I.msg} {lc[lead.id]||"Log"}</Pill>
             <Pill onClick={()=>openEdit(lead)} c={ac.amber}>{I.edit} Edit</Pill>
             <Pill onClick={()=>askStatus(lead,"closed")} c={ac.teal}>{I.check} Close</Pill>
@@ -293,6 +307,7 @@ export default function App(){
           <div className="flex flex-wrap gap-2">
             <Pill onClick={()=>openEdit(lead)} c={ac.amber}>{I.edit} Edit</Pill>
             <Pill href={`tel:${lead.phone.replace(/\s/g,"")}`} c={ac.green}>{I.phone} Call</Pill>
+            <Pill href={waHref(lead.phone)} c={ac.green}>{I.msg} WhatsApp</Pill>
             <Pill onClick={()=>openLogs(lead)} c={ac.blue}>{I.msg} {lc[lead.id]?`${lc[lead.id]}`:"Log"}</Pill>
             {lead.status==="in_progress"&&<><Pill onClick={()=>askStatus(lead,"closed")} c={ac.green}>{I.check} Won</Pill><Pill onClick={()=>askStatus(lead,"lost")} c={ac.red}>{I.x} Lost</Pill></>}
             {(lead.status==="closed"||lead.status==="lost")&&<Pill onClick={()=>askStatus(lead,"in_progress")} c={ac.blue}>{I.redo} Reopen</Pill>}
