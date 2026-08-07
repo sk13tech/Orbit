@@ -47,6 +47,7 @@ const I={
   search:<svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>,
   x:<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>,
   phone:<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>,
+  wa:<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A11.8 11.8 0 0012.13 0C5.59 0 .29 5.29.29 11.82c0 2.08.54 4.11 1.57 5.9L0 24l6.48-1.7a11.78 11.78 0 005.64 1.43h.01c6.53 0 11.83-5.3 11.83-11.83 0-3.16-1.23-6.12-3.44-8.42zm-8.39 18.26h-.01a9.8 9.8 0 01-4.99-1.36l-.36-.21-3.85 1.01 1.03-3.75-.24-.38a9.78 9.78 0 01-1.5-5.23c0-5.42 4.41-9.83 9.84-9.83 2.63 0 5.11 1.02 6.97 2.89a9.79 9.79 0 012.88 6.97c0 5.42-4.41 9.84-9.82 9.84zm5.39-7.36c-.29-.15-1.72-.85-1.99-.95-.26-.1-.45-.15-.64.15-.19.29-.74.95-.9 1.14-.17.19-.33.22-.62.07-.29-.15-1.2-.44-2.29-1.41-.85-.76-1.42-1.7-1.59-1.99-.17-.29-.02-.44.13-.59.13-.13.29-.33.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.15-.64-1.55-.88-2.12-.23-.55-.47-.47-.64-.48l-.55-.01c-.19 0-.5.07-.76.36-.26.29-1 1-.1 2.44.9 1.44 1.29 1.95 2.77 3.16 1.48 1.21 2.06 1.6 3.12 2.02 1.06.42 1.48.36 2.03.31.55-.05 1.72-.7 1.96-1.38.24-.67.24-1.25.17-1.38-.07-.12-.26-.19-.55-.33z"/></svg>,
   chev:<svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>,
   check:<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>,
   trash:<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/></svg>,
@@ -145,7 +146,7 @@ export default function App(){
   const [fu,setFu]=useState({todayLeads:[] as Lead[],overdueLeads:[] as Lead[],upcomingLeads:[] as Lead[],totalFollowups:0});
   const [stats,setStats]=useState<Stats|null>(null);
   const [lc,setLc]=useState<Record<string,number>>({});
-  const [cc,setCc]=useState("+91");const [phD,setPhD]=useState("");const [nm,setNm]=useState("");const [vd,setVd]=useState(td());const [ed,setEd]=useState("");const [pr,setPr]=useState("");const [nt,setNt]=useState("");const [sv,setSv]=useState(false);
+  const [phD,setPhD]=useState("");const [nm,setNm]=useState("");const [vd,setVd]=useState(td());const [ed,setEd]=useState("");const [pr,setPr]=useState("");const [nt,setNt]=useState("");const [sv,setSv]=useState(false);
   const tmr=useRef<ReturnType<typeof setTimeout>|null>(null);
 
   useEffect(()=>{FS.getSiteConfig().then(setCfg).catch(()=>{});},[]);
@@ -165,20 +166,15 @@ export default function App(){
   const la=useCallback(()=>{if(!user)return;fl();ff();fst();fc();},[user,fl,ff,fst,fc]);
   const doSearch=useCallback(()=>{fl(q);},[q,fl]);
   useEffect(()=>{if(df||dt)fl(q);},[df,dt,q,fl]);
-  const openNew=()=>{setEditing(null);setCc("+91");setPhD("");setNm("");setVd(td());setEd("");setPr("");setNt("");setForm(true);};
+  const openNew=()=>{setEditing(null);setPhD("");setNm("");setVd(td());setEd("");setPr("");setNt("");setForm(true);};
   const openEdit=(l:Lead)=>{
     setEditing(l);
-    // Extract country code and number from stored phone
-    const raw=l.phone.replace(/\D/g,"");
-    let code="+91",digits=raw;
-    if(raw.startsWith("91")&&raw.length>10){code="+91";digits=raw.slice(2);}
-    else if(raw.startsWith("1")&&raw.length>10){code="+1";digits=raw.slice(1);}
-    else if(raw.length<=10){code="+91";digits=raw;}
-    setCc(code);setPhD(digits.slice(0,10));
+    const digits=l.phone.replace(/\D/g,"").slice(-10);
+    setPhD(digits);
     setNm(l.name);setVd(l.dateOfVisit);setEd(l.expectedPurchaseDate);setPr(l.product);setNt(l.notes||"");setForm(true);
   };
   const hP=(v:string)=>{const raw=v.replace(/\D/g,"").slice(0,10);setPhD(raw);};
-  const save=async()=>{if(!nm||!phD||!pr||!vP(phD).ok||!user)return;setSv(true);const phone=`${cc} ${phD.slice(0,5)}${phD.length>5?" "+phD.slice(5):""}`;const body={name:nm,phone,product:pr,dateOfVisit:vd,expectedPurchaseDate:ed,notes:nt||null};try{if(editing)await FS.updateLead(editing.id,body);else await FS.createLead(user.uid,body);setForm(false);la();}finally{setSv(false);}};
+  const save=async()=>{if(!nm||!phD||!pr||!vP(phD).ok||!user)return;setSv(true);const phone=phD;const body={name:nm,phone,product:pr,dateOfVisit:vd,expectedPurchaseDate:ed,notes:nt||null};try{if(editing)await FS.updateLead(editing.id,body);else await FS.createLead(user.uid,body);setForm(false);la();}finally{setSv(false);}};
   const setSt=async(id:string,s:string)=>{
     const updates: Record<string,unknown> = {status:s};
     if(s==="closed") updates.notes="Closed lead";
@@ -269,7 +265,7 @@ export default function App(){
           </div>
           <div className="flex gap-2 mt-3 flex-wrap">
             <Pill href={`tel:${lead.phone.replace(/\s/g,"")}`} c={ac.green}>{I.phone} Call</Pill>
-            <Pill href={waHref(lead.phone)} c={ac.green}>{I.msg} WhatsApp</Pill>
+            <Pill href={waHref(lead.phone)} c={ac.green}>{I.wa} WhatsApp</Pill>
             <Pill onClick={()=>openLogs(lead)} c={ac.blue}>{I.msg} {lc[lead.id]||"Log"}</Pill>
             <Pill onClick={()=>openEdit(lead)} c={ac.amber}>{I.edit} Edit</Pill>
             <Pill onClick={()=>askStatus(lead,"closed")} c={ac.teal}>{I.check} Close</Pill>
@@ -307,7 +303,7 @@ export default function App(){
           <div className="flex flex-wrap gap-2">
             <Pill onClick={()=>openEdit(lead)} c={ac.amber}>{I.edit} Edit</Pill>
             <Pill href={`tel:${lead.phone.replace(/\s/g,"")}`} c={ac.green}>{I.phone} Call</Pill>
-            <Pill href={waHref(lead.phone)} c={ac.green}>{I.msg} WhatsApp</Pill>
+            <Pill href={waHref(lead.phone)} c={ac.green}>{I.wa} WhatsApp</Pill>
             <Pill onClick={()=>openLogs(lead)} c={ac.blue}>{I.msg} {lc[lead.id]?`${lc[lead.id]}`:"Log"}</Pill>
             {lead.status==="in_progress"&&<><Pill onClick={()=>askStatus(lead,"closed")} c={ac.green}>{I.check} Won</Pill><Pill onClick={()=>askStatus(lead,"lost")} c={ac.red}>{I.x} Lost</Pill></>}
             {(lead.status==="closed"||lead.status==="lost")&&<Pill onClick={()=>askStatus(lead,"in_progress")} c={ac.blue}>{I.redo} Reopen</Pill>}
@@ -521,21 +517,7 @@ export default function App(){
           <div className="flex items-center justify-between py-4 gap-4">
             <label className="text-[15px] text-[#6B7280] shrink-0">Phone</label>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <select value={cc} onChange={e=>setCc(e.target.value)} autoComplete="off" className="bg-[#F4F5F0] rounded-xl px-2 py-2 text-[14px] text-[#1A1A1A] font-medium focus:outline-none" style={{minWidth:72}}>
-                  <option value="+91">🇮🇳 +91</option>
-                  <option value="+1">🇺🇸 +1</option>
-                  <option value="+44">🇬🇧 +44</option>
-                  <option value="+61">🇦🇺 +61</option>
-                  <option value="+971">🇦🇪 +971</option>
-                  <option value="+65">🇸🇬 +65</option>
-                  <option value="+81">🇯🇵 +81</option>
-                  <option value="+49">🇩🇪 +49</option>
-                  <option value="+86">🇨🇳 +86</option>
-                  <option value="+33">🇫🇷 +33</option>
-                </select>
-                <input type="tel" inputMode="numeric" pattern="[0-9]*" autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} maxLength={10} value={phD} onChange={e=>hP(e.target.value)} className="flex-1 bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium" />
-              </div>
+              <input type="tel" inputMode="numeric" pattern="[0-9]*" autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} maxLength={10} value={phD} onChange={e=>hP(e.target.value)} className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium" />
               {phD&&<p className={`text-[11px] mt-1 text-right font-medium ${vP(phD).ok?"text-[#2B8A3E]":"text-[#E67700]"}`}>{vP(phD).m}</p>}
             </div>
           </div>
