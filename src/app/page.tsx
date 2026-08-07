@@ -140,6 +140,7 @@ export default function App(){
   const [dt,setDt]=useState("");
   const [exp,setExp]=useState<string|null>(null);
   const [del,setDel]=useState<Lead|null>(null);
+  const [statusConfirm,setStatusConfirm]=useState<{lead:Lead;status:"closed"|"lost"|"in_progress"}|null>(null);
   const [lds,setLds]=useState<Lead[]>([]);
   const [fu,setFu]=useState({todayLeads:[] as Lead[],overdueLeads:[] as Lead[],upcomingLeads:[] as Lead[],totalFollowups:0});
   const [stats,setStats]=useState<Stats|null>(null);
@@ -178,6 +179,12 @@ export default function App(){
     if(s==="lost"){try{await FS.createLog(id,"Lead lost");}catch{}}
     la();
   };
+  const askStatus=(lead:Lead,status:"closed"|"lost"|"in_progress")=>setStatusConfirm({lead,status});
+  const confirmStatusChange=async()=>{
+    if(!statusConfirm)return;
+    await setSt(statusConfirm.lead.id,statusConfirm.status);
+    setStatusConfirm(null);
+  };
   const rm=async(id:string)=>{await FS.deleteLead(id);setDel(null);setExp(null);la();};
   const [editLogId,setEditLogId]=useState<string|null>(null);
   const [editLogText,setEditLogText]=useState("");
@@ -185,7 +192,15 @@ export default function App(){
   const savLog=async()=>{if(!remark||!logLead)return;const n=await FS.createLog(logLead.id,remark);setLogs(p=>[n,...p]);setLc(p=>({...p,[logLead.id]:(p[logLead.id]||0)+1}));setRemark("");setAddLog(false);};
   const delLog=async(logId:string)=>{if(!logLead)return;try{await FS.deleteLog(logId);setLogs(p=>p.filter(l=>l.id!==logId));setLc(p=>({...p,[logLead.id]:Math.max((p[logLead.id]||1)-1,0)}));}catch(e){console.error(e);}};
   const startEditLog=(log:Log)=>{setEditLogId(log.id);setEditLogText(log.remark);setAddLog(false);};
-  const saveEditLog=async()=>{if(!editLogId||!editLogText)return;try{await FS.updateLog(editLogId,editLogText);setLogs(p=>p.map(l=>l.id===editLogId?{...l,remark:editLogText}:l));setEditLogId(null);setEditLogText("");}catch(e){console.error(e);}};
+  const saveEditLog=async()=>{
+    if(!editLogId||!editLogText)return;
+    try{
+      const updated=await FS.updateLog(editLogId,editLogText);
+      setLogs(p=>p.map(l=>l.id===editLogId?updated:l));
+      setEditLogId(null);
+      setEditLogText("");
+    }catch(e){console.error(e);}
+  };
   const csv=async()=>{
     if(!user)return;
     try{
@@ -243,7 +258,7 @@ export default function App(){
             <Pill href={`tel:${lead.phone.replace(/\s/g,"")}`} c={ac.green}>{I.phone} Call</Pill>
             <Pill onClick={()=>openLogs(lead)} c={ac.blue}>{I.msg} {lc[lead.id]||"Log"}</Pill>
             <Pill onClick={()=>openEdit(lead)} c={ac.amber}>{I.edit} Edit</Pill>
-            <Pill onClick={()=>setSt(lead.id,"closed")} c={ac.teal}>{I.check} Close</Pill>
+            <Pill onClick={()=>askStatus(lead,"closed")} c={ac.teal}>{I.check} Close</Pill>
           </div>
         </div>
       </div>
@@ -279,8 +294,8 @@ export default function App(){
             <Pill onClick={()=>openEdit(lead)} c={ac.amber}>{I.edit} Edit</Pill>
             <Pill href={`tel:${lead.phone.replace(/\s/g,"")}`} c={ac.green}>{I.phone} Call</Pill>
             <Pill onClick={()=>openLogs(lead)} c={ac.blue}>{I.msg} {lc[lead.id]?`${lc[lead.id]}`:"Log"}</Pill>
-            {lead.status==="in_progress"&&<><Pill onClick={()=>setSt(lead.id,"closed")} c={ac.green}>{I.check} Won</Pill><Pill onClick={()=>setSt(lead.id,"lost")} c={ac.red}>{I.x} Lost</Pill></>}
-            {(lead.status==="closed"||lead.status==="lost")&&<Pill onClick={()=>setSt(lead.id,"in_progress")} c={ac.blue}>{I.redo} Reopen</Pill>}
+            {lead.status==="in_progress"&&<><Pill onClick={()=>askStatus(lead,"closed")} c={ac.green}>{I.check} Won</Pill><Pill onClick={()=>askStatus(lead,"lost")} c={ac.red}>{I.x} Lost</Pill></>}
+            {(lead.status==="closed"||lead.status==="lost")&&<Pill onClick={()=>askStatus(lead,"in_progress")} c={ac.blue}>{I.redo} Reopen</Pill>}
             <button type="button" onClick={(e)=>{e.stopPropagation();e.preventDefault();tap("medium");setDel(lead);}} onTouchEnd={(e)=>{e.stopPropagation();e.preventDefault();tap("medium");setDel(lead);}} className="p-2.5 rounded-2xl text-[#E03131] select-none cursor-pointer" style={{backgroundColor:"#E0313112",touchAction:"manipulation",WebkitTapHighlightColor:"transparent"}}>{I.trash}</button>
           </div>
         </div>
@@ -492,7 +507,7 @@ export default function App(){
             <label className="text-[15px] text-[#6B7280] shrink-0">Phone</label>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
-                <select value={cc} onChange={e=>setCc(e.target.value)} className="bg-[#F4F5F0] rounded-xl px-2 py-2 text-[14px] text-[#1A1A1A] font-medium focus:outline-none" style={{minWidth:72}}>
+                <select value={cc} onChange={e=>setCc(e.target.value)} autoComplete="off" className="bg-[#F4F5F0] rounded-xl px-2 py-2 text-[14px] text-[#1A1A1A] font-medium focus:outline-none" style={{minWidth:72}}>
                   <option value="+91">🇮🇳 +91</option>
                   <option value="+1">🇺🇸 +1</option>
                   <option value="+44">🇬🇧 +44</option>
@@ -504,17 +519,17 @@ export default function App(){
                   <option value="+86">🇨🇳 +86</option>
                   <option value="+33">🇫🇷 +33</option>
                 </select>
-                <input type="tel" inputMode="numeric" pattern="[0-9]*" maxLength={10} value={phD} onChange={e=>hP(e.target.value)} className="flex-1 bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium" placeholder="XXXXXXXXXX"/>
+                <input type="tel" inputMode="numeric" pattern="[0-9]*" autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false} maxLength={10} value={phD} onChange={e=>hP(e.target.value)} className="flex-1 bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium" />
               </div>
               {phD&&<p className={`text-[11px] mt-1 text-right font-medium ${vP(phD).ok?"text-[#2B8A3E]":"text-[#E67700]"}`}>{vP(phD).m}</p>}
             </div>
           </div>
           {/* Other fields */}
-          {[{l:"Name *",el:<input type="text" value={nm} onChange={e=>setNm(e.target.value)} placeholder="Full name" className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium placeholder-[#D1D5DB]"/>},{l:"Visit",el:<input type="date" value={vd} onChange={e=>setVd(e.target.value)} className="bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none ml-auto block font-medium"/>},{l:"Expected *",el:<input type="date" value={ed} onChange={e=>setEd(e.target.value)} className="bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none ml-auto block font-medium"/>},{l:"Product *",el:<input type="text" value={pr} onChange={e=>setPr(e.target.value)} placeholder="Product or service" className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium placeholder-[#D1D5DB]"/>}].map(f=>(
+          {[{l:"Name *",el:<input type="text" autoComplete="off" autoCorrect="off" autoCapitalize="words" spellCheck={false} value={nm} onChange={e=>setNm(e.target.value)} placeholder="Full name" className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium placeholder-[#D1D5DB]"/>},{l:"Visit",el:<input type="date" autoComplete="off" value={vd} onChange={e=>setVd(e.target.value)} className="bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none ml-auto block font-medium"/>},{l:"Expected *",el:<input type="date" autoComplete="off" value={ed} onChange={e=>setEd(e.target.value)} className="bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none ml-auto block font-medium"/>},{l:"Product *",el:<input type="text" autoComplete="off" autoCorrect="off" autoCapitalize="words" spellCheck={false} value={pr} onChange={e=>setPr(e.target.value)} placeholder="Product or service" className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none text-right font-medium placeholder-[#D1D5DB]"/>}].map(f=>(
             <div key={f.l} className="flex items-center justify-between py-4 gap-4"><label className="text-[15px] text-[#6B7280] shrink-0">{f.l}</label><div className="flex-1 min-w-0">{f.el}</div></div>
           ))}
         </div>
-        <div className={`${C} p-4 mb-5`} style={CS}><label className="text-[15px] text-[#6B7280] block mb-2">Notes</label><textarea value={nt} onChange={e=>setNt(e.target.value)} placeholder="Optional notes..." rows={3} className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none resize-none font-medium placeholder-[#D1D5DB]"/></div>
+        <div className={`${C} p-4 mb-5`} style={CS}><label className="text-[15px] text-[#6B7280] block mb-2">Notes</label><textarea value={nt} onChange={e=>setNt(e.target.value)} autoComplete="off" autoCorrect="off" autoCapitalize="sentences" spellCheck={false} placeholder="Optional notes..." rows={3} className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none resize-none font-medium placeholder-[#D1D5DB]"/></div>
         <div className="h-4"/>
       </div></div></div>)}
 
@@ -546,6 +561,14 @@ export default function App(){
         <p className="font-bold text-[18px] text-[#1A1A1A] mb-1">Delete Lead?</p>
         <p className="text-[14px] text-[#6B7280] mb-6">This removes the lead and all logs.</p>
         <div className="space-y-2"><button onClick={withTap(()=>rm(del.id),"heavy")} className="w-full py-3.5 text-white text-[16px] font-bold rounded-2xl bg-[#E03131] active:scale-[0.98] transition-transform">Delete</button><button onClick={withTap(()=>setDel(null))} className="w-full py-3.5 text-[#6B7280] text-[16px] font-medium rounded-2xl active:scale-[0.98] transition-transform">Cancel</button></div>
+      </div></div>)}
+
+      {/* Status Confirm */}
+      {statusConfirm&&(<div className="fixed inset-0 z-50 flex items-center justify-center p-5 a-fadeIn"><div className="absolute inset-0 overlay" onClick={()=>setStatusConfirm(null)}/><div className="relative bg-white rounded-3xl p-7 w-full max-w-xs text-center a-scaleIn" style={CS}>
+        <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{backgroundColor:(statusConfirm.status==="closed"?"#43B88C":statusConfirm.status==="lost"?"#E03131":"#3B5BDB")+"12",color:statusConfirm.status==="closed"?"#43B88C":statusConfirm.status==="lost"?"#E03131":"#3B5BDB"}}>{statusConfirm.status==="closed"?I.check:statusConfirm.status==="lost"?I.x:I.redo}</div>
+        <p className="font-bold text-[18px] text-[#1A1A1A] mb-1">{statusConfirm.status==="closed"?"Mark as Won?":statusConfirm.status==="lost"?"Mark as Lost?":"Reopen Lead?"}</p>
+        <p className="text-[14px] text-[#6B7280] mb-6">{statusConfirm.status==="closed"?"This will close the lead and add a closing log.":statusConfirm.status==="lost"?"This will mark the lead as lost.":"This will move the lead back to active."}</p>
+        <div className="space-y-2"><button onClick={withTap(confirmStatusChange,"medium")} className="w-full py-3.5 text-white text-[16px] font-bold rounded-2xl active:scale-[0.98] transition-transform" style={{backgroundColor:statusConfirm.status==="closed"?"#43B88C":statusConfirm.status==="lost"?"#E03131":"#3B5BDB"}}>{statusConfirm.status==="closed"?"Mark Won":statusConfirm.status==="lost"?"Mark Lost":"Reopen"}</button><button onClick={withTap(()=>setStatusConfirm(null))} className="w-full py-3.5 text-[#6B7280] text-[16px] font-medium rounded-2xl active:scale-[0.98] transition-transform">Cancel</button></div>
       </div></div>)}
 
       {/* ═══ Login Popup ═══ */}

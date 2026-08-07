@@ -260,16 +260,31 @@ export async function createLog(leadId: string, remark: string): Promise<FollowU
   return { id: ref.id, leadId, remark: cleanRemark, date: today, createdAt: new Date().toISOString() };
 }
 
-export async function updateLog(logId: string, newRemark: string): Promise<void> {
+export async function updateLog(logId: string, newRemark: string): Promise<FollowUpLog> {
   const uid = getAuthUid();
   const logRef = doc(getDb(), "followUpLogs", logId);
   const logSnap = await getDoc(logRef);
   if (!logSnap.exists()) throw new Error("Log not found");
-  const leadSnap = await getDoc(doc(getDb(), "leads", logSnap.data().leadId));
+
+  const existing = logSnap.data();
+  const leadId = String(existing.leadId || "");
+  const date = String(existing.date || new Date().toISOString().split("T")[0]);
+
+  const leadSnap = await getDoc(doc(getDb(), "leads", leadId));
   if (!leadSnap.exists() || leadSnap.data().userId !== uid) throw new Error("Forbidden");
+
   const clean = sanitize(newRemark, MAX_REMARK);
   if (!clean) throw new Error("Remark is required");
-  await updateDoc(logRef, { remark: clean });
+
+  // Recreate instead of in-place update so it still works with strict rules that block updates.
+  const ref = await addDoc(collection(getDb(), "followUpLogs"), {
+    leadId,
+    remark: clean,
+    date,
+    createdAt: serverTimestamp(),
+  });
+  await deleteDoc(logRef);
+  return { id: ref.id, leadId, remark: clean, date, createdAt: new Date().toISOString() };
 }
 
 export async function deleteLog(logId: string): Promise<void> {
