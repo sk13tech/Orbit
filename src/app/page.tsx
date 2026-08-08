@@ -49,7 +49,7 @@ const I={
   search:<svg width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>,
   x:<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>,
   phone:<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>,
-  wa:<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A11.8 11.8 0 0012.13 0C5.59 0 .29 5.29.29 11.82c0 2.08.54 4.11 1.57 5.9L0 24l6.48-1.7a11.78 11.78 0 005.64 1.43h.01c6.53 0 11.83-5.3 11.83-11.83 0-3.16-1.23-6.12-3.44-8.42zm-8.39 18.26h-.01a9.8 9.8 0 01-4.99-1.36l-.36-.21-3.85 1.01 1.03-3.75-.24-.38a9.78 9.78 0 01-1.5-5.23c0-5.42 4.41-9.83 9.84-9.83 2.63 0 5.11 1.02 6.97 2.89a9.79 9.79 0 012.88 6.97c0 5.42-4.41 9.84-9.82 9.84zm5.39-7.36c-.29-.15-1.72-.85-1.99-.95-.26-.1-.45-.15-.64.15-.19.29-.74.95-.9 1.14-.17.19-.33.22-.62.07-.29-.15-1.2-.44-2.29-1.41-.85-.76-1.42-1.7-1.59-1.99-.17-.29-.02-.44.13-.59.13-.13.29-.33.43-.5.14-.17.19-.29.29-.48.1-.19.05-.36-.02-.5-.07-.15-.64-1.55-.88-2.12-.23-.55-.47-.47-.64-.48l-.55-.01c-.19 0-.5.07-.76.36-.26.29-1 1-.1 2.44.9 1.44 1.29 1.95 2.77 3.16 1.48 1.21 2.06 1.6 3.12 2.02 1.06.42 1.48.36 2.03.31.55-.05 1.72-.7 1.96-1.38.24-.67.24-1.25.17-1.38-.07-.12-.26-.19-.55-.33z"/></svg>,
+  wa:<svg width="16" height="16" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M19.11 17.27c-.27-.14-1.58-.78-1.82-.87-.24-.09-.42-.14-.6.14-.18.27-.69.87-.85 1.05-.16.18-.31.2-.58.07-.27-.14-1.12-.41-2.13-1.31-.79-.7-1.32-1.56-1.47-1.83-.15-.27-.02-.41.11-.54.12-.12.27-.31.4-.47.13-.16.18-.27.27-.45.09-.18.05-.34-.02-.47-.07-.14-.6-1.45-.82-1.99-.22-.52-.44-.45-.6-.46h-.51c-.18 0-.47.07-.72.34-.25.27-.95.93-.95 2.27 0 1.34.97 2.63 1.1 2.81.13.18 1.9 3.04 4.71 4.14.67.29 1.2.46 1.61.59.68.21 1.3.18 1.79.11.55-.08 1.58-.65 1.8-1.29.22-.64.22-1.19.15-1.29-.07-.1-.24-.16-.51-.29Z"/><path d="M27.42 4.58A15.76 15.76 0 0 0 16.2 0C7.48 0 .39 7.09.39 15.81c0 2.79.73 5.51 2.12 7.9L0 32l8.49-2.23a15.75 15.75 0 0 0 7.69 1.97h.01c8.72 0 15.81-7.09 15.81-15.81 0-4.22-1.64-8.18-4.58-11.35ZM16.2 29.08h-.01a13.1 13.1 0 0 1-6.68-1.82l-.48-.28-5.04 1.32 1.35-4.92-.31-.5a13.08 13.08 0 0 1-2-7.02c0-7.23 5.88-13.11 13.12-13.11 3.51 0 6.8 1.37 9.28 3.86a13.02 13.02 0 0 1 3.84 9.26c0 7.23-5.88 13.11-13.11 13.11Z"/></svg>,
   chev:<svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>,
   check:<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>,
   trash:<svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/></svg>,
@@ -144,6 +144,7 @@ export default function App(){
   const [exp,setExp]=useState<string|null>(null);
   const [del,setDel]=useState<Lead|null>(null);
   const [statusConfirm,setStatusConfirm]=useState<{lead:Lead;status:"closed"|"lost"|"in_progress"}|null>(null);
+  const [toast,setToast]=useState<{msg:string;show:boolean}|null>(null);
   const [lds,setLds]=useState<Lead[]>([]);
   const [fu,setFu]=useState({todayLeads:[] as Lead[],overdueLeads:[] as Lead[],upcomingLeads:[] as Lead[],totalFollowups:0});
   const [stats,setStats]=useState<Stats|null>(null);
@@ -176,7 +177,18 @@ export default function App(){
     setNm(l.name);setVd(l.dateOfVisit);setEd(l.expectedPurchaseDate);setPr(l.product);setNt(l.notes||"");setForm(true);
   };
   const hP=(v:string)=>{const raw=v.replace(/\D/g,"").slice(0,10);setPhD(raw);};
-  const save=async()=>{if(!nm||!phD||!pr||!vP(phD).ok||!user)return;setSv(true);const phone=phD;const body={name:nm,phone,product:pr,dateOfVisit:vd,expectedPurchaseDate:ed,notes:nt||null};try{if(editing)await FS.updateLead(editing.id,body);else await FS.createLead(user.uid,body);setForm(false);la();}finally{setSv(false);}};
+  const showToast=(msg:string)=>{setToast({msg,show:true});setTimeout(()=>setToast(t=>t?{...t,show:false}:t),2200);setTimeout(()=>setToast(null),2450);};
+  const save=async()=>{
+    if(!nm||!phD||!pr||!vP(phD).ok||!user)return;
+    if(ed && vd && new Date(ed+"T00:00:00").getTime() < new Date(vd+"T00:00:00").getTime()){
+      showToast("Expected date cannot be earlier than visit date");
+      return;
+    }
+    setSv(true);
+    const phone=phD;
+    const body={name:nm,phone,product:pr,dateOfVisit:vd,expectedPurchaseDate:ed,notes:nt.slice(0,500)||null};
+    try{if(editing)await FS.updateLead(editing.id,body);else await FS.createLead(user.uid,body);setForm(false);la();}finally{setSv(false);}
+  };
   const setSt=async(id:string,s:string)=>{
     const updates: Record<string,unknown> = {status:s};
     if(s==="closed") updates.notes="Closed lead";
@@ -533,7 +545,7 @@ export default function App(){
             <div key={f.l} className="flex items-center justify-between py-4 gap-4"><label className="text-[15px] text-[#6B7280] shrink-0">{f.l}</label><div className="flex-1 min-w-0">{f.el}</div></div>
           ))}
         </div>
-        <div className={`${C} p-4 mb-5`} style={CS}><label className="text-[15px] text-[#6B7280] block mb-2">Notes</label><textarea value={nt} onChange={e=>setNt(e.target.value)} autoComplete="off" autoCorrect="off" autoCapitalize="sentences" spellCheck={false} placeholder="Optional notes..." rows={3} className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none resize-none font-medium placeholder-[#D1D5DB]"/></div>
+        <div className={`${C} p-4 mb-5`} style={CS}><div className="flex items-center justify-between mb-2"><label className="text-[15px] text-[#6B7280]">Notes</label><span className="text-[11px] text-[#BFBFBF] font-medium">{nt.length}/500</span></div><textarea value={nt} onChange={e=>setNt(e.target.value.slice(0,500))} autoComplete="off" autoCorrect="off" autoCapitalize="sentences" spellCheck={false} placeholder="Optional notes..." rows={3} className="w-full bg-transparent text-[16px] text-[#1A1A1A] focus:outline-none resize-none font-medium placeholder-[#D1D5DB]"/></div>
         <div className="h-4"/>
       </div></div></div>)}
 
@@ -574,6 +586,15 @@ export default function App(){
         <p className="text-[14px] text-[#6B7280] mb-6">{statusConfirm.status==="closed"?"This will close the lead and add a closing log.":statusConfirm.status==="lost"?"This will mark the lead as lost.":"This will move the lead back to active."}</p>
         <div className="space-y-2"><button onClick={withTap(confirmStatusChange,"medium")} className="w-full py-3.5 text-white text-[16px] font-bold rounded-2xl active:scale-[0.98] transition-transform" style={{backgroundColor:statusConfirm.status==="closed"?"#43B88C":statusConfirm.status==="lost"?"#E03131":"#3B5BDB"}}>{statusConfirm.status==="closed"?"Mark Won":statusConfirm.status==="lost"?"Mark Lost":"Reopen"}</button><button onClick={withTap(()=>setStatusConfirm(null))} className="w-full py-3.5 text-[#6B7280] text-[16px] font-medium rounded-2xl active:scale-[0.98] transition-transform">Cancel</button></div>
       </div></div>)}
+
+      {/* Toast */}
+      {toast&&(
+        <div className={`fixed left-1/2 top-4 z-[70] ${toast.show?"toast-in":"toast-out"}`}>
+          <div className="bg-[#1A1A1A] text-white px-4 py-3 rounded-2xl text-[14px] font-medium shadow-lg min-w-[240px] text-center">
+            {toast.msg}
+          </div>
+        </div>
+      )}
 
       {/* ═══ Login Popup ═══ */}
       {!user&&!authLoading&&!isFirebaseConfigured&&(
