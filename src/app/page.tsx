@@ -482,7 +482,7 @@ export default function App(){
       </div>
 
       {/* Nav */}
-      {nav&&(<div className={`fixed inset-0 z-50 ${navClosing?"a-fadeOut":"a-fadeIn"}`}><div className="absolute inset-0 overlay" onClick={closeNav}/><div className={`absolute left-0 top-0 bottom-0 w-[280px] bg-white flex flex-col ${navClosing?"a-slideOut":"a-slideIn"}`} style={{boxShadow:"4px 0 32px rgba(0,0,0,0.06)"}}>
+      {nav&&(<div className={`fixed inset-0 z-50 ${navClosing?"a-fadeOut":"a-fadeIn"}`}><div className="absolute inset-0 overlay" style={{background:"rgba(255,255,255,0.32)",backdropFilter:"blur(28px) saturate(160%)",WebkitBackdropFilter:"blur(28px) saturate(160%)"}} onClick={closeNav}/><div className={`absolute left-0 top-0 bottom-0 w-[280px] bg-white flex flex-col ${navClosing?"a-slideOut":"a-slideIn"}`} style={{boxShadow:"4px 0 32px rgba(0,0,0,0.06)"}}>
         <div className="px-5 pt-5 pb-4 flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-xl overflow-hidden" style={{boxShadow:"0 1px 4px rgba(0,0,0,0.06)"}}><img src={logoSrc} alt={cfg.siteName} className="w-full h-full object-cover" referrerPolicy="no-referrer"/></div><div><span className="brand-font text-[18px] font-semibold text-[#1A1A1A] block leading-tight">{cfg.siteName}</span><span className="text-[12px] text-[#9CA3AF]">Lead Management</span></div></div><button onClick={withTap(closeNav)} className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[#9CA3AF] active:scale-90 transition-transform" style={{boxShadow:"0 1px 4px rgba(0,0,0,0.08)"}}>{I.back}</button></div>
         <div className="mx-5 h-px bg-[#F3F4F0]"/>
         <div className="px-5 pt-5 flex-1">
@@ -519,7 +519,7 @@ export default function App(){
       {/* Sign Out Confirm */}
       {showSignOut&&(
         <div className="fixed inset-0 z-[55] flex items-center justify-center p-5 a-fadeIn">
-          <div className="absolute inset-0 overlay" onClick={()=>setShowSignOut(false)}/>
+          <div className="absolute inset-0 overlay" style={{background:"rgba(255,255,255,0.32)",backdropFilter:"blur(28px) saturate(160%)",WebkitBackdropFilter:"blur(28px) saturate(160%)"}} onClick={()=>setShowSignOut(false)}/>
           <div className="relative bg-white rounded-3xl p-7 w-full max-w-xs text-center a-scaleIn" style={CS}>
             <div className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{backgroundColor:"#E0313112",color:"#E03131"}}>
               <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
@@ -535,7 +535,7 @@ export default function App(){
       )}
 
       {/* Form */}
-      {form&&(<div className="fixed inset-0 z-50 a-fadeIn"><div className="absolute inset-0 overlay" onClick={()=>setForm(false)}/><div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[92vh] overflow-y-auto a-slideUp"><div className="max-w-lg mx-auto p-5">
+      {form&&(<div className="fixed inset-0 z-50 a-fadeIn"><div className="absolute inset-0 overlay" style={{background:"rgba(255,255,255,0.32)",backdropFilter:"blur(28px) saturate(160%)",WebkitBackdropFilter:"blur(28px) saturate(160%)"}} onClick={()=>setForm(false)}/><div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[92vh] overflow-y-auto a-slideUp"><div className="max-w-lg mx-auto p-5">
         <div className="flex justify-center mb-3"><div className="w-10 h-1 bg-[#ECEEE8] rounded-full"/></div>
         <div className="flex items-center justify-between mb-5"><button onClick={withTap(()=>setForm(false))} className="text-[#9CA3AF] text-[15px] font-medium">Cancel</button><h2 className="font-bold text-[17px] text-[#1A1A1A]">{editing?"Edit Lead":"New Lead"}</h2><button onClick={withTap(save,"medium")} disabled={sv} className="text-[#3B5BDB] font-bold text-[15px]">{sv?"...":"Save"}</button></div>
         <div className={`${C} p-4 divide-y divide-[#F3F4F0] mb-4`} style={CS}>
@@ -557,7 +557,7 @@ export default function App(){
       </div></div></div>)}
 
       {/* Logs */}
-      {logSheet&&logLead&&(<div className="fixed inset-0 z-50 a-fadeIn"><div className="absolute inset-0 overlay" onClick={()=>setLogSheet(false)}/><div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[88vh] overflow-y-auto a-slideUp"><div className="max-w-lg mx-auto p-5">
+      {logSheet&&logLead&&(<div className="fixed inset-0 z-50 a-fadeIn"><div className="absolute inset-0 overlay" style={{background:"rgba(255,255,255,0.32)",backdropFilter:"blur(28px) saturate(160%)",WebkitBackdropFilter:"blur(28px) saturate(160%)"}} onClick={()=>setLogSheet(false)}/><div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl max-h-[88vh] overflow-y-auto a-slideUp"><div className="max-w-lg mx-auto p-5">
         <div className="flex justify-center mb-3"><div className="w-10 h-1 bg-[#ECEEE8] rounded-full"/></div>
         <div className="flex items-center justify-between mb-4"><button onClick={withTap(()=>setLogSheet(false))} className="text-[#9CA3AF] text-[15px] font-medium">Close</button><h2 className="font-bold text-[17px] text-[#1A1A1A]">Follow-up Logs</h2><button onClick={withTap(()=>{setAddLog(true);setRemark("");})} className="text-[#3B5BDB] font-bold text-[15px]">+ Add</button></div>
         <div className={`${C} p-4 mb-4 flex items-center gap-3`} style={CS}><div className="w-10 h-10 rounded-2xl flex items-center justify-center text-[13px] font-bold" style={{backgroundColor:avc(logLead.name)+"15",color:avc(logLead.name)}}>{ini(logLead.name)}</div><div><p className="font-semibold text-[15px] text-[#1A1A1A]">{logLead.name}</p><p className="text-[13px] text-[#6B7280]">{logLead.product}</p></div></div>
@@ -579,7 +579,7 @@ export default function App(){
       </div></div></div>)}
 
       {/* Delete */}
-      {del&&(<div className="fixed inset-0 z-50 flex items-center justify-center p-5 a-fadeIn"><div className="absolute inset-0 overlay" onClick={()=>setDel(null)}/><div className="relative bg-white rounded-3xl p-7 w-full max-w-xs text-center a-scaleIn" style={CS}>
+      {del&&(<div className="fixed inset-0 z-50 flex items-center justify-center p-5 a-fadeIn"><div className="absolute inset-0 overlay" style={{background:"rgba(255,255,255,0.32)",backdropFilter:"blur(28px) saturate(160%)",WebkitBackdropFilter:"blur(28px) saturate(160%)"}} onClick={()=>setDel(null)}/><div className="relative bg-white rounded-3xl p-7 w-full max-w-xs text-center a-scaleIn" style={CS}>
         <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-[#E03131] mx-auto mb-4" style={{backgroundColor:"#E0313112"}}>{I.trash}</div>
         <p className="font-bold text-[18px] text-[#1A1A1A] mb-1">Delete Lead?</p>
         <p className="text-[14px] text-[#6B7280] mb-6">This removes the lead and all logs.</p>
@@ -587,7 +587,7 @@ export default function App(){
       </div></div>)}
 
       {/* Status Confirm */}
-      {statusConfirm&&(<div className="fixed inset-0 z-50 flex items-center justify-center p-5 a-fadeIn"><div className="absolute inset-0 overlay" onClick={()=>setStatusConfirm(null)}/><div className="relative bg-white rounded-3xl p-7 w-full max-w-xs text-center a-scaleIn" style={CS}>
+      {statusConfirm&&(<div className="fixed inset-0 z-50 flex items-center justify-center p-5 a-fadeIn"><div className="absolute inset-0 overlay" style={{background:"rgba(255,255,255,0.32)",backdropFilter:"blur(28px) saturate(160%)",WebkitBackdropFilter:"blur(28px) saturate(160%)"}} onClick={()=>setStatusConfirm(null)}/><div className="relative bg-white rounded-3xl p-7 w-full max-w-xs text-center a-scaleIn" style={CS}>
         <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{backgroundColor:(statusConfirm.status==="closed"?"#43B88C":statusConfirm.status==="lost"?"#E03131":"#3B5BDB")+"12",color:statusConfirm.status==="closed"?"#43B88C":statusConfirm.status==="lost"?"#E03131":"#3B5BDB"}}>{statusConfirm.status==="closed"?I.check:statusConfirm.status==="lost"?I.x:I.redo}</div>
         <p className="font-bold text-[18px] text-[#1A1A1A] mb-1">{statusConfirm.status==="closed"?"Mark as Won?":statusConfirm.status==="lost"?"Mark as Lost?":"Reopen Lead?"}</p>
         <p className="text-[14px] text-[#6B7280] mb-6">{statusConfirm.status==="closed"?"This will close the lead and add a closing log.":statusConfirm.status==="lost"?"This will mark the lead as lost.":"This will move the lead back to active."}</p>
