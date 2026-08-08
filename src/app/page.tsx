@@ -22,6 +22,8 @@ const td=()=>new Date().toISOString().split("T")[0];
 const ddiff=(d:string)=>Math.round((new Date(d).getTime()-new Date(td()).getTime())/864e5);
 function getBadge(d:string,s:string){if(s!=="in_progress")return null;const x=ddiff(d);if(x===0)return{t:"Today",c:"bg-[#2563EB]/10 text-[#2563EB]"};if(x<0)return{t:`${-x}d late`,c:"bg-[#E85D75]/10 text-[#E85D75]"};return{t:`In ${x}d`,c:"bg-[#F5A623]/10 text-[#F5A623]"};}
 const fmt=(d:string)=>d?new Date(d+"T00:00:00").toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"}):"";
+const fmtExportDate=(value:string)=>{const d=new Date(value);if(isNaN(d.getTime()))return value;const day=String(d.getDate()).padStart(2,"0");const month=String(d.getMonth()+1).padStart(2,"0");const year=d.getFullYear();return `${day}${month}${year}`;};
+const fmtLogStamp=(dateStr:string,createdAt:string)=>{const d=new Date(createdAt);const hh=String(d.getHours()).padStart(2,"0");const mm=String(d.getMinutes()).padStart(2,"0");return `${fmt(dateStr)} ${hh}:${mm}`;};
 const ini=(n:string)=>n.split(" ").map(w=>w[0]).join("").toUpperCase().slice(0,2);
 function avc(n:string){let h=0;for(let i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return["#5B8DEF","#43B88C","#F5A623","#E85D75","#6C63FF","#38BDF8","#F472B6","#A78BFA"][Math.abs(h)%8];}
 function tap(s:"light"|"medium"|"heavy"="light"){try{if(typeof navigator!=="undefined"&&"vibrate" in navigator)navigator.vibrate(s==="light"?1:s==="medium"?4:8);}catch{}}
@@ -216,7 +218,7 @@ export default function App(){
       const leads=await FS.getLeads(user.uid);
       const esc=(v:string)=>{let s=v.replace(/"/g,'""');if(/^[=+\-@\t\r]/.test(s))s="'"+s;return'"'+s+'"';};
       const header="Name,Phone,Product,Status,Date of Visit,Expected Purchase Date,Created";
-      const rows=leads.map(l=>[esc(l.name),esc(l.phone),esc(l.product),esc(l.status),esc(l.dateOfVisit),esc(l.expectedPurchaseDate),esc(l.createdAt.split("T")[0])].join(","));
+      const rows=leads.map(l=>[esc(l.name),esc(l.phone),esc(l.product),esc(l.status),esc(fmtExportDate(l.dateOfVisit)),esc(fmtExportDate(l.expectedPurchaseDate)),esc(fmtExportDate(l.createdAt))].join(","));
       const content="\uFEFF"+header+"\n"+rows.join("\n");
       const blob=new Blob([content],{type:"text/csv;charset=utf-8;"});
       const url=URL.createObjectURL(blob);
@@ -366,7 +368,7 @@ export default function App(){
   /* ═══ AUTH SCREENS ═══ */
   if(authLoading) return(
     <div className="min-h-screen bg-[#F4F5F0] flex items-center justify-center">
-      <div className="text-center"><span className="brand-font text-[20px] font-semibold text-[#1A1A1A]">Orbit</span><p className="text-[14px] text-[#9CA3AF] mt-2">Loading...</p></div>
+      <div className="text-center"><div className="w-16 h-16 rounded-2xl overflow-hidden mx-auto mb-3"><img src="/logo.png" alt="Orbit" className="w-full h-full object-cover" referrerPolicy="no-referrer"/></div><p className="text-[14px] text-[#9CA3AF] mt-2">Loading...</p></div>
     </div>
   );
 
@@ -544,7 +546,7 @@ export default function App(){
         <div className="pb-6">
           {logs.length===0&&!addLog?<div className="text-center py-12"><p className="text-[#D1D5DB] text-[15px] font-medium mb-4">No logs yet</p><button onClick={withTap(()=>{setAddLog(true);setRemark("");})} className="px-5 py-3 bg-[#1A1A1A] text-white rounded-2xl text-[14px] font-bold active:scale-[0.97] transition-transform">Add First Log</button></div>
           :<div className="relative">{logs.length>0&&<div className="absolute left-[8px] top-3 bottom-3 w-0.5 bg-[#F3F4F0] rounded-full"/>}<div className="space-y-4">{logs.map(log=>(<div key={log.id} className="flex gap-4 relative"><div className="w-4 h-4 rounded-full bg-[#3B5BDB] shrink-0 mt-0.5 z-10 border-[3px] border-white"/><div className="flex-1">
-            <div className="flex items-center justify-between"><p className="text-[11px] text-[#3B5BDB] font-bold">{fmt(log.date)}</p><div className="flex gap-1">
+            <div className="flex items-center justify-between"><p className="text-[11px] text-[#3B5BDB] font-bold">{fmtLogStamp(log.date, log.createdAt)}</p><div className="flex gap-1">
               <button type="button" onClick={(e)=>{e.stopPropagation();e.preventDefault();startEditLog(log);}} onTouchEnd={(e)=>{e.stopPropagation();e.preventDefault();startEditLog(log);}} className="p-1.5 rounded-lg text-[#9CA3AF] select-none cursor-pointer" style={{touchAction:"manipulation"}}>{I.edit}</button>
               <button type="button" onClick={(e)=>{e.stopPropagation();e.preventDefault();tap("medium");delLog(log.id);}} onTouchEnd={(e)=>{e.stopPropagation();e.preventDefault();tap("medium");delLog(log.id);}} className="p-1.5 rounded-lg text-[#E03131] select-none cursor-pointer" style={{touchAction:"manipulation"}}>{I.trash}</button>
             </div></div>
