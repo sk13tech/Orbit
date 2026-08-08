@@ -4,17 +4,50 @@ export const metadata = { title: "Privacy Policy — Orbit" };
 
 export default function PrivacyPage() {
   const sections = [
-    { t: "Information We Collect", d: "We collect the following data when you use Orbit: your Google account information (name, email, profile picture) for authentication; lead data including contact names, phone numbers, products, dates, and notes; follow-up logs and remarks; and basic usage analytics." },
-    { t: "How We Use Your Information", d: "Your data is used exclusively to provide lead management functionality, generate analytics and performance reports within your account, improve the application experience, and ensure account security. We never use your data for advertising." },
-    { t: "Data Storage & Security", d: "All data is stored securely in Google Firebase/Firestore with encryption at rest and in transit. Authentication is handled via Google OAuth 2.0. We implement industry-standard security measures including access controls, audit logging, and regular security reviews." },
-    { t: "Data Isolation", d: "Your data is completely isolated from other users. Firestore security rules ensure that only you can read, create, update, or delete your own leads and logs. No other user or administrator can access your data without explicit authorization." },
-    { t: "Data Sharing", d: "Sita Enterprises Pvt. Ltd. does not sell, trade, rent, or share your personal data with any third parties. Data may only be disclosed when required by law, to protect our legal rights, or with your explicit written consent." },
-    { t: "Data Retention & Deletion", d: "Your data is retained as long as your account is active. You may export your data at any time using the CSV export feature. You can request complete account and data deletion by contacting us. All data will be permanently removed within 30 days of a deletion request." },
-    { t: "Your Rights", d: "Under applicable data protection laws, you have the right to: access all your personal data, correct any inaccurate data, request complete data deletion, export your data in CSV format, withdraw consent at any time, and lodge a complaint with a data protection authority." },
-    { t: "Cookies & Local Storage", d: "Orbit uses browser local storage to maintain your authentication session. We do not use third-party tracking cookies. Firebase may use essential cookies for authentication and security purposes only." },
-    { t: "Children's Privacy", d: "Orbit is not intended for use by individuals under the age of 18. We do not knowingly collect personal information from children. If you believe a child has provided us with personal data, please contact us immediately." },
-    { t: "Changes to This Policy", d: "We may update this Privacy Policy periodically to reflect changes in our practices or legal requirements. Material changes will be communicated through the application. Continued use after changes constitutes acceptance of the revised policy." },
-    { t: "Contact Us", d: "For any privacy-related questions, concerns, data access requests, or deletion requests, please contact our data protection team at sitaenterprisespvtltd@gmail.com — Sita Enterprises Pvt. Ltd." },
+    {
+      t: "Information We Collect",
+      d: "We collect account profile information provided through Google Authentication, along with lead data, notes, follow-up logs, and analytics metadata needed to operate Orbit.",
+    },
+    {
+      t: "How We Use Data",
+      d: "Your data is used to authenticate your account, provide lead management features, generate in-app statistics, support export tools, improve reliability, and maintain product security.",
+    },
+    {
+      t: "Storage & Security",
+      d: "Orbit stores application data using Firebase/Firestore and applies access controls through Firebase Authentication and Firestore Security Rules. We use reasonable technical measures to protect your information.",
+    },
+    {
+      t: "User Data Isolation",
+      d: "Each user can only access, edit, and manage their own leads and logs. Access to records is restricted by authenticated user identity and ownership checks in both application logic and Firestore rules.",
+    },
+    {
+      t: "Sharing of Information",
+      d: "We do not sell or rent your personal or business data. Information is shared only when necessary to provide the service, comply with legal obligations, or protect the rights and safety of the service and its users.",
+    },
+    {
+      t: "Retention",
+      d: "Data is retained while your account remains active or as needed to provide the service. You may request deletion of your account data, subject to any lawful retention obligations.",
+    },
+    {
+      t: "Your Rights",
+      d: "You may review, update, export, or request deletion of your data. You may also contact us regarding privacy concerns, security questions, or data handling requests.",
+    },
+    {
+      t: "Cookies & Session Storage",
+      d: "Orbit may use browser storage and authentication persistence required for login sessions and product functionality. We do not use third-party advertising or tracking cookies inside the application experience.",
+    },
+    {
+      t: "Third-Party Services",
+      d: "Orbit relies on Google/Firebase services for authentication and data infrastructure. Your use of Google sign-in may also be subject to Google’s own terms and privacy practices.",
+    },
+    {
+      t: "Policy Changes",
+      d: "We may revise this Privacy Policy from time to time. When significant changes are made, the updated policy will be reflected in the application with a revised effective date.",
+    },
+    {
+      t: "Contact",
+      d: "For privacy questions, requests, or concerns, contact Sita Enterprises Pvt. Ltd. at sitaenterprisespvtltd@gmail.com.",
+    },
   ];
 
   return (
@@ -26,26 +59,45 @@ export default function PrivacyPage() {
           </Link>
           <span className="text-[16px] font-bold text-[#1A1A1A]">Privacy Policy</span>
         </div>
+
         <div className="px-4 pt-5">
           <div className="bg-white rounded-3xl p-6 mb-4" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}>
-            <div className="w-12 h-12 rounded-2xl bg-[#2B8A3E]/10 flex items-center justify-center text-[#2B8A3E] mb-4">
-              <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[12px] uppercase tracking-[0.12em] text-[#9CA3AF] font-semibold mb-2">Privacy</p>
+                <h1 className="text-[24px] font-extrabold text-[#1A1A1A] tracking-tight mb-2">Privacy Policy</h1>
+                <p className="text-[14px] text-[#6B7280] leading-relaxed max-w-[28rem]">
+                  This page describes how Orbit handles your data, protects account privacy,
+                  and limits access so users only manage their own records.
+                </p>
+              </div>
+              <div className="w-12 h-12 rounded-2xl bg-[#2B8A3E]/10 flex items-center justify-center text-[#2B8A3E] shrink-0">
+                <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+              </div>
             </div>
-            <h1 className="text-[24px] font-extrabold text-[#1A1A1A] tracking-tight mb-2">Privacy Policy</h1>
-            <p className="text-[14px] text-[#6B7280] leading-relaxed">Your privacy matters to us. This policy explains how Sita Enterprises Pvt. Ltd. collects, uses, and protects your personal information when you use Orbit.</p>
-            <div className="mt-4 pt-3 border-t border-[#F3F4F0] flex items-center justify-between">
-              <p className="text-[12px] text-[#9CA3AF]">Sita Enterprises Pvt. Ltd.</p>
-              <p className="text-[12px] text-[#9CA3AF]">{new Date().toLocaleDateString("en-IN", { month: "long", year: "numeric" })}</p>
+
+            <div className="mt-5 pt-4 border-t border-[#F3F4F0] grid grid-cols-2 gap-4 text-[12px]">
+              <div>
+                <p className="text-[#BFBFBF]">Operator</p>
+                <p className="text-[#1A1A1A] font-medium mt-0.5">Sita Enterprises Pvt. Ltd.</p>
+              </div>
+              <div>
+                <p className="text-[#BFBFBF]">Contact</p>
+                <p className="text-[#1A1A1A] font-medium mt-0.5 break-all">sitaenterprisespvtltd@gmail.com</p>
+              </div>
             </div>
           </div>
+
           <div className="space-y-3">
             {sections.map((s, i) => (
               <div key={s.t} className="bg-white rounded-3xl p-5" style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.04)" }}>
                 <div className="flex items-start gap-3.5">
-                  <span className="w-8 h-8 rounded-xl bg-[#F4F5F0] flex items-center justify-center text-[12px] font-bold text-[#6B7280] shrink-0 mt-0.5">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="w-8 h-8 rounded-xl bg-[#F4F5F0] flex items-center justify-center text-[12px] font-bold text-[#6B7280] shrink-0 mt-0.5">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <div>
                     <h3 className="font-bold text-[15px] text-[#1A1A1A] mb-1.5">{s.t}</h3>
-                    <p className="text-[14px] text-[#6B7280] leading-[1.7]">{s.d}</p>
+                    <p className="text-[14px] text-[#6B7280] leading-[1.75]">{s.d}</p>
                   </div>
                 </div>
               </div>

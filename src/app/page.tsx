@@ -220,7 +220,9 @@ export default function App(){
     }catch(e){console.error(e);}
   };
   const waHref=(phone:string)=>{
-    const digits=phone.replace(/\D/g,"");
+    let digits=phone.replace(/\D/g,"");
+    if(digits.startsWith("0")) digits=digits.slice(1);
+    if(digits.length===10) digits=`91${digits}`; // default to India when only local 10-digit mobile is stored
     return digits?`https://wa.me/${digits}`:"https://wa.me/";
   };
 
@@ -380,7 +382,12 @@ export default function App(){
   /* ═══ AUTH SCREENS ═══ */
   if(authLoading) return(
     <div className="min-h-screen bg-[#F4F5F0] flex items-center justify-center">
-      <div className="text-center"><div className="w-16 h-16 rounded-2xl overflow-hidden mx-auto mb-3"><img src="/logo.png" alt="Orbit" className="w-full h-full object-cover" referrerPolicy="no-referrer"/></div><p className="text-[14px] text-[#9CA3AF] mt-2">Loading...</p></div>
+      <div className="text-center">
+        <div className="w-16 h-16 rounded-2xl overflow-hidden mx-auto mb-4"><img src="/logo.png" alt="Orbit" className="w-full h-full object-cover" referrerPolicy="no-referrer"/></div>
+        <div className="w-28 h-[3px] bg-[#ECEEE8] rounded-full overflow-hidden mx-auto">
+          <div className="w-full h-full bg-[#1A1A1A] rounded-full loading-bar"></div>
+        </div>
+      </div>
     </div>
   );
 
