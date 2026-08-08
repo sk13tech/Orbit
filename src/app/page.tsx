@@ -384,8 +384,8 @@ export default function App(){
     <div className="min-h-screen bg-[#F4F5F0] flex items-center justify-center">
       <div className="text-center">
         <div className="w-16 h-16 rounded-2xl overflow-hidden mx-auto mb-4"><img src="/logo.png" alt="Orbit" className="w-full h-full object-cover" referrerPolicy="no-referrer"/></div>
-        <div className="w-28 h-[3px] bg-[#ECEEE8] rounded-full overflow-hidden mx-auto">
-          <div className="w-full h-full bg-[#1A1A1A] rounded-full loading-bar"></div>
+        <div className="w-28 h-[3px] bg-[#ECEEE8] rounded-full overflow-hidden mx-auto relative">
+          <div className="h-full bg-[#1A1A1A] rounded-full loading-bar absolute left-0 top-0"></div>
         </div>
       </div>
     </div>
