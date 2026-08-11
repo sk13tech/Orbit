@@ -148,6 +148,7 @@ export default function App(){
   const [del,setDel]=useState<Lead|null>(null);
   const [statusConfirm,setStatusConfirm]=useState<{lead:Lead;status:"closed"|"lost"|"in_progress"}|null>(null);
   const [toast,setToast]=useState<{msg:string;show:boolean}|null>(null);
+  const [shortcutHandled,setShortcutHandled]=useState(false);
   const [lds,setLds]=useState<Lead[]>([]);
   const [fu,setFu]=useState({todayLeads:[] as Lead[],overdueLeads:[] as Lead[],upcomingLeads:[] as Lead[],totalFollowups:0});
   const [stats,setStats]=useState<Stats|null>(null);
@@ -173,6 +174,17 @@ export default function App(){
   const doSearch=useCallback(()=>{fl(q);},[q,fl]);
   useEffect(()=>{if(df||dt)fl(q);},[df,dt,q,fl]);
   const openNew=()=>{setEditing(null);setPhD("");setNm("");setVd(td());setEd("");setPr("");setNt("");setForm(true);};
+  useEffect(()=>{
+    if(!user||shortcutHandled||typeof window==="undefined") return;
+    const params=new URLSearchParams(window.location.search);
+    if(params.get("action")==="new-lead"){
+      openNew();
+      setShortcutHandled(true);
+      const url=new URL(window.location.href);
+      url.searchParams.delete("action");
+      window.history.replaceState({},"",url.pathname + url.search + url.hash);
+    }
+  },[user,shortcutHandled]);
   const openEdit=(l:Lead)=>{
     setEditing(l);
     const digits=l.phone.replace(/\D/g,"").slice(-10);

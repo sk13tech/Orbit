@@ -15,5 +15,20 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Add Lead",
+      "short_name": "Add Lead",
+      "description": "Open Orbit and create a new lead",
+      "url": "/?action=new-lead",
+      "icons": [
+        {
+          "src": "/logo.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }

@@ -364,12 +364,25 @@ export async function getFollowups(userId: string) {
   const nextWeekStr = nextWeek.toISOString().split("T")[0];
 
   const active = leads.filter(l => l.status === "in_progress");
-  const todayLeads = active.filter(l => l.expectedPurchaseDate === today);
-  const overdueLeads = active.filter(l => l.expectedPurchaseDate < today);
-  const upcomingLeads = active.filter(l => l.expectedPurchaseDate >= tomorrowStr && l.expectedPurchaseDate <= nextWeekStr);
+
+  const todayLeads = active
+    .filter(l => l.expectedPurchaseDate === today)
+    .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+
+  // Nearest overdue first: yesterday before older overdue items
+  const overdueLeads = active
+    .filter(l => l.expectedPurchaseDate < today)
+    .sort((a, b) => b.expectedPurchaseDate.localeCompare(a.expectedPurchaseDate));
+
+  // Nearest upcoming first: tomorrow before later upcoming items
+  const upcomingLeads = active
+    .filter(l => l.expectedPurchaseDate >= tomorrowStr && l.expectedPurchaseDate <= nextWeekStr)
+    .sort((a, b) => a.expectedPurchaseDate.localeCompare(b.expectedPurchaseDate));
 
   return {
-    todayLeads, overdueLeads, upcomingLeads,
+    todayLeads,
+    overdueLeads,
+    upcomingLeads,
     totalFollowups: todayLeads.length + overdueLeads.length + upcomingLeads.length,
   };
 }
